@@ -23,7 +23,7 @@ Az adatok a böngésző `localStorage`-ában tárolódnak (nincs szerver). Az el
 Tesztek (Node.js 18+):
 
 ```bash
-node --test tests/
+node --test
 ```
 
 ## Mappaszerkezet
