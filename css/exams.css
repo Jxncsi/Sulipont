@@ -1,0 +1,23 @@
+/* Dolgozatnaptár: heti tábla, napok, torlódás-figyelmeztetés */
+.cal-controls { display: flex; flex-wrap: wrap; gap: 1rem; align-items: flex-end; justify-content: space-between; margin-block: 1.25rem 1rem; }
+.cal-controls .field { min-width: min(100%, 16rem); }
+.week-nav { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+.week-nav strong { min-width: 9.5rem; text-align: center; }
+
+.warnings { list-style: none; display: grid; gap: .5rem; margin-bottom: 1rem; }
+.warnings li { padding: .7rem .9rem; background: var(--warn-soft); border: 1px solid var(--warn-line); border-radius: var(--radius-sm); color: var(--warn); font-weight: 650; }
+
+.week { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .9rem; align-items: start; }
+.day { display: grid; gap: .6rem; padding: .8rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
+.day.is-today { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary), var(--shadow); }
+.day.is-over { border-color: var(--bad); box-shadow: 0 0 0 1px var(--bad), var(--shadow); }
+.day-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; }
+.day-head h3 { margin: 0; font-size: 1rem; }
+.day-empty { margin: 0; color: var(--muted); font-size: .9rem; }
+
+.exam { display: grid; gap: .25rem; padding: .65rem .7rem; background: var(--primary-soft); border-radius: var(--radius-sm); }
+.exam-head { display: flex; flex-wrap: wrap; align-items: center; gap: .35rem; }
+.exam-head strong { color: var(--primary); margin-right: .15rem; }
+.exam-head .chip { background: var(--surface); }
+.exam-meta { margin: 0; font-size: .85rem; color: var(--muted); }
+.exam .btn { justify-self: start; min-height: 2rem; padding: .15rem .4rem; font-size: .85rem; }
