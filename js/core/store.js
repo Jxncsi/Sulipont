@@ -49,6 +49,8 @@
         write(key, [...set]);
         return on;
       },
+      /** Eltávolítja az azonosítót (pl. törölt hirdetés kedvenc-jelölését). */
+      drop(id) { const set = load(); if (set.delete(id)) write(key, [...set]); },
     };
   }
 
