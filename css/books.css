@@ -1,0 +1,12 @@
+/* Tankönyvbörze: hirdetéskártya, ár, kedvenc-gomb */
+.book-head { display: flex; align-items: flex-start; justify-content: space-between; gap: .5rem; }
+.price { margin: .25rem 0 !important; font-size: 1.4rem; font-weight: 800; color: var(--primary); }
+
+.fav {
+  flex: none; display: grid; place-items: center; width: 2.5rem; height: 2.5rem;
+  border: 1px solid var(--line); border-radius: 50%; background: var(--surface); color: var(--muted);
+  font-size: 1.3rem; line-height: 1; cursor: pointer; transition: transform .1s, color .15s, border-color .15s;
+}
+.fav:hover { border-color: var(--bad); color: var(--bad); }
+.fav:active { transform: scale(.92); }
+.fav.is-on { color: var(--bad); border-color: var(--bad); background: var(--bad-soft); }
