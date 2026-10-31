@@ -1,0 +1,55 @@
+/* Reszponzív töréspontok: az alapstílusok tágas képernyőre szólnak, itt szűkítünk */
+
+/* Nagyobb tablet és kisebb */
+@media (max-width: 1000px) {
+  .filters-5 { grid-template-columns: 1fr 1fr; }
+  .filters-5 .field:first-child { grid-column: 1 / -1; }
+  .week { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Telefon */
+@media (max-width: 720px) {
+  main { padding-block: 1rem 2rem; }
+  .hero { padding-block: 1rem; }
+  .page-head .btn { width: 100%; }
+
+  /* Hamburger menü */
+  .header-inner { position: static; }
+  .nav-toggle {
+    display: inline-flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
+    width: 2.75rem; height: 2.75rem; padding: 0;
+    border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer;
+  }
+  .nav-toggle span { display: block; width: 1.3rem; height: 2px; border-radius: 2px; background: var(--text); transition: transform .2s, opacity .2s; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  .site-nav {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: .15rem;
+    padding: .5rem 1rem 1rem; background: var(--surface);
+    border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+  }
+  .site-nav.open { display: flex; }
+  .site-nav a { padding: .8rem .9rem; }
+
+  /* Szűrők, űrlapok és a heti tábla egy oszlopban */
+  .filters-5 { grid-template-columns: 1fr; }
+  .week { grid-template-columns: 1fr; }
+  .cal-controls { flex-direction: column; align-items: stretch; }
+  .week-nav { justify-content: space-between; }
+  .week-nav strong { order: -1; flex: 1 1 100%; }
+  .week-nav .btn { flex: 1; white-space: nowrap; padding-inline: .5rem; }
+  .actions .btn { flex: 1 1 100%; }
+
+  .toast-region { inset: auto .75rem .75rem .75rem; }
+  dialog .actions .btn { flex: 1; }
+}
+
+/* Nagyon keskeny telefon */
+@media (max-width: 420px) {
+  .row { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: 1fr; }
+  .tile-num { font-size: 2rem; }
+}
