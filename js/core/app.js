@@ -47,9 +47,12 @@
   function init() {
     $('#nav-toggle').addEventListener('click', () => setNav($('#nav-toggle').getAttribute('aria-expanded') !== 'true'));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setNav(false); });
+    S.ui.hydrateIcons();
     Object.values(S.views).forEach((v) => v.init && v.init());
     window.addEventListener('hashchange', () => route(true));
     route(false);
+    // A böngésző a #fragment alapján a nézet tetejéhez görget (a ragadós fejléc alá): ezt visszaállítjuk.
+    window.addEventListener('load', () => window.scrollTo(0, 0), { once: true });
   }
 
   init();

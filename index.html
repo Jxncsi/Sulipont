@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Sulipont – Iskolai portál</title>
   <meta name="description" content="Sulipont: talált tárgyak, dolgozatnaptár és tankönyvbörze egy helyen, iskolásoknak.">
+  <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
@@ -19,18 +20,21 @@
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="#kezdolap" aria-label="Sulipont – kezdőlap">
-        <span class="brand-mark" aria-hidden="true">S</span>
+        <svg class="brand-mark" viewBox="0 0 56 56" aria-hidden="true">
+          <text x="28" y="40" text-anchor="middle">5</text>
+          <path d="M9 31C5 16 21 6 36 9c14 3 17 20 7 30-9 9-27 10-35-3"/>
+        </svg>
         <span class="brand-name">Sulipont</span>
       </a>
       <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menü megnyitása">
         <span></span><span></span><span></span>
       </button>
       <nav class="site-nav" id="site-nav" aria-label="Főmenü">
-        <a href="#kezdolap" data-nav="kezdolap">Kezdőlap</a>
-        <a href="#talalt" data-nav="talalt">Talált tárgyak</a>
-        <a href="#dolgozat" data-nav="dolgozat">Dolgozatnaptár</a>
-        <a href="#konyv" data-nav="konyv">Tankönyvbörze</a>
-        <a href="docs.html">Dokumentáció</a>
+        <a class="tab tab-home" href="#kezdolap" data-nav="kezdolap">Kezdőlap</a>
+        <a class="tab tab-found" href="#talalt" data-nav="talalt">Talált tárgyak</a>
+        <a class="tab tab-exams" href="#dolgozat" data-nav="dolgozat">Dolgozatnaptár</a>
+        <a class="tab tab-books" href="#konyv" data-nav="konyv">Tankönyvbörze</a>
+        <a class="tab tab-docs" href="docs.html">Dokumentáció</a>
       </nav>
     </div>
   </header>
@@ -40,37 +44,46 @@
     <!-- Kezdőlap -->
     <section class="view" id="kezdolap" data-view="kezdolap" data-section="kezdolap" aria-labelledby="h-kezdolap">
       <div class="hero">
-        <p class="eyebrow">Iskolai portál</p>
-        <h1 id="h-kezdolap">Minden iskolai ügy egy helyen.</h1>
-        <p class="lead">Nézd meg, mi van a portán, mikor írunk dolgozatot, és kinél kapható használt tankönyv.</p>
+        <div class="hero-copy">
+          <p class="eyebrow">Iskolai portál</p>
+          <h1 id="h-kezdolap">Minden iskolai ügy egy helyen.</h1>
+          <p class="lead">Nézd meg, mi van a portán, mikor írunk dolgozatot, és kinél kapható használt tankönyv.</p>
+        </div>
+        <div class="leaf" aria-hidden="true">
+          <span class="leaf-month" id="leaf-month"></span>
+          <strong class="leaf-day" id="leaf-day"></strong>
+          <span class="leaf-week" id="leaf-week"></span>
+        </div>
       </div>
-      <ul class="tiles" aria-label="Modulok">
+      <ul class="modules" aria-label="Modulok">
         <li>
-          <a class="tile" href="#talalt">
-            <span class="tile-icon" aria-hidden="true">🎒</span>
+          <a class="module mod-found" href="#talalt">
+            <span class="mod-icon" data-icon="backpack" aria-hidden="true"></span>
             <h2>Talált tárgyak</h2>
             <p>Pulcsi, kulacs, tolltartó: mi van most a portán?</p>
-            <strong class="tile-num" id="n-found">0</strong>
-            <span class="tile-label">gazdára váró tárgy</span>
+            <strong class="mod-num" id="n-found">0</strong>
+            <span class="mod-label">gazdára váró tárgy</span>
+            <span class="mod-note">Lehet, hogy a tiéd!</span>
           </a>
         </li>
         <li>
-          <a class="tile" href="#dolgozat">
-            <span class="tile-icon" aria-hidden="true">✏️</span>
+          <a class="module mod-exams" href="#dolgozat">
+            <span class="mod-icon" data-icon="pencil" aria-hidden="true"></span>
             <h2>Dolgozatnaptár</h2>
             <p>Heti nézet osztályonként, torlódás-figyelmeztetéssel.</p>
-            <strong class="tile-num" id="n-exams">0</strong>
-            <span class="tile-label">számonkérés ezen a héten</span>
-            <span class="chip chip-warn" id="n-warn" hidden></span>
+            <strong class="mod-num" id="n-exams">0</strong>
+            <span class="mod-label">számonkérés ezen a héten</span>
+            <span class="stamp" id="n-warn" hidden></span>
           </a>
         </li>
         <li>
-          <a class="tile" href="#konyv">
-            <span class="tile-icon" aria-hidden="true">📚</span>
+          <a class="module mod-books" href="#konyv">
+            <span class="mod-icon" data-icon="book" aria-hidden="true"></span>
             <h2>Tankönyvbörze</h2>
             <p>Használt tankönyvek és jegyzetek diákoktól diákoknak.</p>
-            <strong class="tile-num" id="n-books">0</strong>
-            <span class="tile-label">aktív hirdetés</span>
+            <strong class="mod-num" id="n-books">0</strong>
+            <span class="mod-label">aktív hirdetés</span>
+            <span class="mod-note">Spórolj egy fizikakönyvet!</span>
           </a>
         </li>
       </ul>
@@ -83,7 +96,7 @@
           <h1 id="h-talalt">Talált tárgyak</h1>
           <p class="lead">Mi van a portán? Szűrj kategóriára és dátumra, és jelezd, ha a tiéd.</p>
         </div>
-        <a class="btn btn-primary" href="#talalt-uj">+ Új tárgy felvétele</a>
+        <a class="btn btn-primary" href="#talalt-uj"><span data-icon="plus" aria-hidden="true"></span>Új tárgy felvétele</a>
       </div>
       <form class="filters filters-5" id="found-filters" role="search" aria-label="Talált tárgyak szűrése">
         <div class="field">
@@ -164,7 +177,7 @@
           <h1 id="h-dolgozat">Dolgozatnaptár</h1>
           <p class="lead">Heti nézet osztályonként. Ha egy osztálynak egy napra háromnál több számonkérés esik, figyelmeztetünk.</p>
         </div>
-        <a class="btn btn-primary" href="#dolgozat-uj">+ Új dolgozat felvétele</a>
+        <a class="btn btn-primary" href="#dolgozat-uj"><span data-icon="plus" aria-hidden="true"></span>Új dolgozat felvétele</a>
       </div>
       <div class="cal-controls">
         <div class="field">
@@ -237,7 +250,7 @@
           <h1 id="h-konyv">Tankönyvbörze</h1>
           <p class="lead">Használt tankönyvek és jegyzetek. Keress tantárgyra és évfolyamra, és jelöld meg a kedvenceidet.</p>
         </div>
-        <a class="btn btn-primary" href="#konyv-uj">+ Hirdetés feladása</a>
+        <a class="btn btn-primary" href="#konyv-uj"><span data-icon="plus" aria-hidden="true"></span>Hirdetés feladása</a>
       </div>
       <form class="filters filters-5" id="book-filters" role="search" aria-label="Hirdetések szűrése">
         <div class="field">
@@ -367,6 +380,7 @@
   <script src="js/core/dates.js"></script>
   <script src="js/core/store.js"></script>
   <script src="js/core/ui.js"></script>
+  <script src="js/core/icons.js"></script>
   <script src="js/core/seed.js"></script>
   <script src="js/core/repos.js"></script>
   <script src="js/logic/found.js"></script>
