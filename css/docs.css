@@ -1,0 +1,67 @@
+/* Dokumentáció oldal (docs.html) */
+
+/* Itt nincs hamburger: a (két elemű) menü mobilon is a fejlécben marad. */
+.site-header .site-nav.nav-inline { display: flex; position: static; flex-direction: row; align-items: center; padding: 0; border: 0; box-shadow: none; background: none; }
+
+.doc { max-width: 60rem; }
+.doc section { margin-block: 2.5rem; scroll-margin-top: 5rem; }
+.doc h2 { font-size: 1.6rem; padding-bottom: .4rem; border-bottom: 2px solid var(--primary-soft); margin-bottom: 1rem; }
+.doc h3 { margin-top: 1.5rem; }
+.doc h4 { margin: 1rem 0 .4rem; font-size: 1rem; }
+.doc ul, .doc ol { padding-left: 1.3rem; }
+.doc li { margin-block: .25rem; }
+
+.toc { display: flex; flex-wrap: wrap; gap: .5rem; list-style: none; padding: 0 !important; margin: 1rem 0 0; }
+.toc a { display: inline-block; padding: .35rem .8rem; border-radius: 999px; background: var(--primary-soft); color: var(--primary); font-weight: 650; font-size: .9rem; text-decoration: none; }
+.toc a:hover { background: var(--primary); color: var(--primary-ink); }
+
+.table-wrap { overflow-x: auto; margin-block: 1rem; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); }
+.doc-table { width: 100%; border-collapse: collapse; font-size: .95rem; }
+.doc-table th, .doc-table td { padding: .6rem .8rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.doc-table thead th { background: var(--surface-2); font-size: .85rem; text-transform: uppercase; letter-spacing: .03em; color: var(--muted); }
+.doc-table tr:last-child td, .doc-table tr:last-child th { border-bottom: 0; }
+.doc-table td.c, .doc-table th.c { text-align: center; }
+
+.timeline { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; list-style: none; padding: 0 !important; counter-reset: ph; }
+.timeline > li { counter-increment: ph; padding: 1rem; background: var(--surface); border: 1px solid var(--line); border-top: 4px solid var(--primary); border-radius: var(--radius); margin: 0; }
+.timeline > li::before { content: counter(ph) ". fázis"; display: block; font-size: .8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; }
+.timeline strong { display: block; margin-bottom: .3rem; }
+.timeline ul { padding-left: 1.1rem; font-size: .92rem; color: var(--muted); }
+
+.ishikawa { overflow-x: auto; padding: 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); }
+.ishikawa svg { display: block; min-width: 46rem; width: 100%; height: auto; font-family: var(--font); }
+.ishikawa .spine, .ishikawa .bone { stroke: var(--primary); stroke-width: 3; fill: none; stroke-linecap: round; }
+.ishikawa .bone { stroke-width: 2; }
+.ishikawa .head { fill: var(--primary); }
+.ishikawa .head-t { fill: var(--primary-ink); font-weight: 700; font-size: 15px; }
+.ishikawa .cat { fill: var(--text); font-weight: 800; font-size: 15px; }
+.ishikawa .cause { fill: var(--muted); font-size: 12.5px; }
+
+.moscow { display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: 1rem; }
+.moscow > div { padding: 1rem; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); border-top: 4px solid var(--line); }
+.moscow h3 { margin: 0 0 .5rem; font-size: 1rem; }
+.moscow ul { font-size: .92rem; }
+.moscow .m { border-top-color: var(--bad); }
+.moscow .s { border-top-color: #e59a0f; }
+.moscow .c { border-top-color: var(--primary); }
+.moscow .w { border-top-color: var(--muted); }
+
+.tiles-sketch { display: grid; grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr)); gap: 1rem; list-style: none; padding: 0 !important; }
+.tiles-sketch li { margin: 0; }
+.tile-s { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.tile-s.picked { border-color: var(--ok); box-shadow: 0 0 0 1px var(--ok); }
+.tile-s svg { display: block; width: 100%; height: auto; background: var(--surface-2); }
+.tile-s svg .l { fill: none; stroke: var(--muted); stroke-width: 1.6; }
+.tile-s svg .f { fill: var(--primary-soft); stroke: var(--primary); stroke-width: 1.4; }
+.tile-s svg .g { fill: var(--ok-soft); stroke: var(--ok); stroke-width: 1.4; }
+.tile-s svg .b { fill: var(--bad-soft); stroke: var(--bad); stroke-width: 1.4; }
+.tile-s figcaption { padding: .6rem .8rem; font-size: .9rem; }
+.tile-s figcaption strong { display: block; }
+
+.ok { color: var(--ok); font-weight: 700; }
+.todo { color: var(--warn); font-weight: 700; }
+
+@media (max-width: 720px) {
+  .doc h2 { font-size: 1.35rem; }
+  .doc-table { font-size: .88rem; }
+}

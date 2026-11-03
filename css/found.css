@@ -1,0 +1,7 @@
+/* Talált tárgyak: fotó és igényelt állapot */
+.card-photo { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: var(--radius-sm); background: var(--surface-2); margin-bottom: .25rem; }
+.card-photo-empty { display: grid; place-items: center; font-size: 3rem; background: linear-gradient(135deg, var(--primary-soft), var(--surface-2)); }
+.item.is-claimed { border-color: var(--warn-line); background: color-mix(in srgb, var(--warn-soft) 35%, var(--surface)); }
+
+.photo-preview { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; margin-top: .5rem; }
+.photo-preview img { width: 8rem; height: 6rem; object-fit: cover; border-radius: var(--radius-sm); border: 1px solid var(--line); }

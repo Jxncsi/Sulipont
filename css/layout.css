@@ -1,0 +1,36 @@
+/* Elrendezés: konténer, fejléc, navigáció, nézetek, rácsok, lábléc */
+.container { width: min(100% - 2rem, 72rem); margin-inline: auto; }
+
+/* Fejléc */
+.site-header { position: sticky; top: 0; z-index: 50; background: var(--surface); border-bottom: 1px solid var(--line); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .75rem; position: relative; }
+
+.brand { display: inline-flex; align-items: center; gap: .6rem; text-decoration: none; color: var(--primary); font-weight: 800; font-size: 1.25rem; }
+.brand-mark { display: grid; place-items: center; width: 2rem; height: 2rem; border-radius: 8px; background: var(--primary); color: var(--primary-ink); font-size: 1.1rem; }
+
+/* Navigáció (mobilon legördülő, ld. responsive.css) */
+.site-nav { display: flex; align-items: center; gap: .25rem; }
+.site-nav a { padding: .5rem .85rem; border-radius: var(--radius-sm); color: var(--muted); font-weight: 600; text-decoration: none; }
+.site-nav a:hover { background: var(--surface-2); color: var(--text); }
+.site-nav a[aria-current="page"] { background: var(--primary-soft); color: var(--primary); }
+.nav-toggle { display: none; }
+
+/* Nézetek */
+main { flex: 1; padding-block: 1.5rem 3rem; }
+.view { animation: fade .2s ease-out; }
+@keyframes fade { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+
+.page-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 1rem; }
+.back { display: inline-block; margin-bottom: 1rem; font-weight: 600; text-decoration: none; }
+.back:hover { text-decoration: underline; }
+
+/* Kezdőlap */
+.hero { padding-block: 2rem 1.5rem; max-width: 48rem; }
+.tiles { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.25rem; margin-top: 1rem; }
+
+/* Rácsok */
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr)); gap: 1.25rem; }
+
+/* Lábléc */
+.site-footer { border-top: 1px solid var(--line); background: var(--surface); color: var(--muted); font-size: .9rem; }
+.site-footer p { margin: 0; padding-block: 1.25rem; }
