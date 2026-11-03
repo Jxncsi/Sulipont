@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dokumentáció – Sulipont</title>
+  <meta name="description" content="A Sulipont projekt dokumentációja: szerepkörök, elemzés, Ishikawa, Crazy 8s, MoSCoW, tesztelés, prezentáció.">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/responsive.css">
+  <link rel="stylesheet" href="css/docs.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Ugrás a tartalomra</a>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html" aria-label="Sulipont – alkalmazás">
+        <span class="brand-mark" aria-hidden="true">S</span><span class="brand-name">Sulipont</span>
+      </a>
+      <nav class="site-nav nav-inline" aria-label="Főmenü">
+        <a href="index.html">← Alkalmazás</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container doc" tabindex="-1">
+    <p class="eyebrow">Projektdokumentáció</p>
+    <h1>Problémából Szoftver – Sulipont</h1>
+    <p class="lead">Három iskolai probléma, egy reszponzív webes portál: talált tárgyak, dolgozatnaptár és tankönyvbörze. Az oldal a beadandó dokumentáció böngészőben olvasható változata.</p>
+    <ul class="toc" aria-label="Tartalom">
+      <li><a href="#alapadatok">Alapadatok</a></li>
+      <li><a href="#szerepkorok">Szerepkörök</a></li>
+      <li><a href="#utemezes">Ütemezés</a></li>
+      <li><a href="#elemzes">Problémaelemzés</a></li>
+      <li><a href="#crazy8">Crazy 8s</a></li>
+      <li><a href="#moscow">MoSCoW</a></li>
+      <li><a href="#git">Verziókövetés</a></li>
+      <li><a href="#teszt">Tesztelés</a></li>
+      <li><a href="#prezentacio">Prezentáció</a></li>
+      <li><a href="#retro">Retrospektív és jövőkép</a></li>
+      <li><a href="#ertekeles">Értékelési szempontok</a></li>
+    </ul>
+
+    <section id="alapadatok">
+      <h2>1. A projekt alapadatai</h2>
+      <div class="table-wrap"><table class="doc-table">
+        <tbody>
+          <tr><th scope="row">Munkaforma</th><td>Kiscsoportos projektmunka (2–3 fős csapat)</td></tr>
+          <tr><th scope="row">Platform</th><td>Webes alkalmazás, <strong>reszponzív</strong> (telefon, tablet, asztali)</td></tr>
+          <tr><th scope="row">Technológia</th><td>HTML, CSS, JavaScript (külső függőség és build nélkül), adattárolás: <code>localStorage</code></td></tr>
+          <tr><th scope="row">Valós problémák</th><td>1) talált tárgyak a portán, 2) torlódó számonkérések, 3) kárba vesző használt tankönyvek</td></tr>
+          <tr><th scope="row">Projektmenedzsment</th><td><a href="https://trello.com/b/x6AtH50N/sulipont-iskolai-port%C3%A1l-tal%C3%A1lt-t%C3%A1rgyak-dolgozatnapt%C3%A1r-tank%C3%B6nyvb%C3%B6rze">Trello tábla</a> (Backlog → Sprint Backlog → Folyamatban → Tesztelés → Hibák → Kész)</td></tr>
+          <tr><th scope="row">Tervező szoftver</th><td><a href="https://www.figma.com/design/hCLiY46XTIukD7jxpJfkar">Figma drótvázak</a> (asztali és mobil: Talált tárgyak, Dolgozatnaptár, Tankönyvbörze)</td></tr>
+          <tr><th scope="row">Verziókövetés</th><td>Git, ágak: <code>main</code>, <code>dev</code>, <code>feature/*</code>, <code>docs/*</code></td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="szerepkorok">
+      <h2>2. Csapatszerepek és felelősségek</h2>
+      <p>Három szerepkör van; kéttagú csapatnál a harmadikat közösen vagy felosztva látják el. A nevek a csapat tagjai.</p>
+      <div class="table-wrap"><table class="doc-table">
+        <thead><tr><th>Feladat</th><th class="c">Scrum Master</th><th class="c">Lead Dev</th><th class="c">UI/UX &amp; QA</th></tr></thead>
+        <tbody>
+          <tr><td>Problémaelemzés (Ishikawa, 5 Miért)</td><td class="c">A</td><td class="c">C</td><td class="c">R</td></tr>
+          <tr><td>Crazy 8s ötletelés, Figma drótvázak</td><td class="c">I</td><td class="c">C</td><td class="c">A/R</td></tr>
+          <tr><td>MoSCoW priorizálás, Trello tábla</td><td class="c">A/R</td><td class="c">C</td><td class="c">C</td></tr>
+          <tr><td>Git repository, ágstratégia, PR-ek</td><td class="c">C</td><td class="c">A/R</td><td class="c">I</td></tr>
+          <tr><td>Közös mag (tárolás, router, dátumok) és a három modul logikája</td><td class="c">I</td><td class="c">A/R</td><td class="c">C</td></tr>
+          <tr><td>A három modul felülete, fotókezelés, reszponzivitás</td><td class="c">I</td><td class="c">C</td><td class="c">A/R</td></tr>
+          <tr><td>Űrlap validáció, modal, interaktivitás</td><td class="c">I</td><td class="c">A/R</td><td class="c">R</td></tr>
+          <tr><td>Tesztelés, hibák rögzítése</td><td class="c">C</td><td class="c">C</td><td class="c">A/R</td></tr>
+          <tr><td>Dokumentáció, prezentáció, retrospektív</td><td class="c">A/R</td><td class="c">R</td><td class="c">R</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted">A: felel · R: elvégzi · C: egyeztetnek vele · I: értesül. Részletek: <code>docs/04-szerepkorok.md</code>.</p>
+    </section>
+
+    <section id="utemezes">
+      <h2>3. Ütemezés és óravázlat</h2>
+      <ol class="timeline">
+        <li><strong>Elemzés, tervezés, PM setup</strong><ul><li>Problémaelemzés (Ishikawa / 5 Miért)</li><li>Crazy 8s, MoSCoW</li><li>Trello tábla, Backlog</li></ul></li>
+        <li><strong>Felkészülés a kódolásra</strong><ul><li>Drótvázak (Figma)</li><li>Git repo, branching stratégia</li><li>Fejlesztői környezet</li></ul></li>
+        <li><strong>Implementáció – Sprint</strong><ul><li>Alapozás: HTML váz, CSS</li><li>Stílus és interaktivitás</li><li>Tesztelés, finomhangolás</li></ul></li>
+        <li><strong>Zárás és értékelés</strong><ul><li>10 perces pitch és demó</li><li>Agilis retrospektív</li></ul></li>
+      </ol>
+    </section>
+
+    <section id="elemzes">
+      <h2>4. Problémaelemzés</h2>
+      <div class="table-wrap"><table class="doc-table">
+        <thead><tr><th>#</th><th>Probléma</th><th>Megoldás</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td><strong>Talált tárgyak:</strong> az elhagyott pulcsik, kulacsok, tolltartók a portán gyűlnek, és senki nem tudja, mi van ott.</td><td>Fotós lista, szűrés kategóriára és dátumra, „Ez az enyém!" jelzés, új tárgy felvétele űrlappal.</td></tr>
+          <tr><td>2</td><td><strong>Dolgozatnaptár:</strong> a számonkérések torlódnak, mert a tanárok nem látják egymáséit.</td><td>Heti nézet, új dolgozat felvétele, figyelmeztetés, ha egy napra háromnál több esik.</td></tr>
+          <tr><td>3</td><td><strong>Tankönyvbörze:</strong> a felsőbb évesek használt könyvei kárba vesznek, az alsóbb évesek újat vesznek.</td><td>Hirdetésfeladás, keresés tantárgyra és évfolyamra, kedvencek.</td></tr>
+        </tbody>
+      </table></div>
+      <p><strong>Közös probléma-állítás:</strong> az iskolai információk nem jutnak el az érintettekhez, mert nincs egy közös, kereshető felület.</p>
+
+      <h3>Ishikawa (halszálka) diagram</h3>
+      <div class="ishikawa">
+        <svg viewBox="0 0 1000 440" role="img" aria-labelledby="ish-t ish-d">
+          <title id="ish-t">Ishikawa diagram</title>
+          <desc id="ish-d">Következmény: az iskolai információ nem jut el az érintettekhez. Okok hat csoportban: emberek, folyamat, eszközök, információ, környezet, szabályok.</desc>
+          <line class="spine" x1="30" y1="220" x2="800" y2="220"/>
+          <rect class="head" x="800" y="165" width="190" height="110" rx="10"/>
+          <text class="head-t" x="895" y="205" text-anchor="middle">Az információ</text>
+          <text class="head-t" x="895" y="227" text-anchor="middle">nem jut el az</text>
+          <text class="head-t" x="895" y="249" text-anchor="middle">érintettekhez</text>
+
+          <line class="bone" x1="190" y1="50" x2="280" y2="220"/><line class="bone" x1="400" y1="50" x2="490" y2="220"/><line class="bone" x1="610" y1="50" x2="700" y2="220"/>
+          <line class="bone" x1="190" y1="390" x2="280" y2="220"/><line class="bone" x1="400" y1="390" x2="490" y2="220"/><line class="bone" x1="610" y1="390" x2="700" y2="220"/>
+
+          <text class="cat" x="190" y="36" text-anchor="middle">Emberek</text>
+          <text class="cause" x="206" y="99" text-anchor="end">Nincs, aki nyilvántartsa</text>
+          <text class="cause" x="227" y="139" text-anchor="end">Tanárok nem egyeztetnek</text>
+          <text class="cause" x="248" y="179" text-anchor="end">Diák nem tudja, kinek adja</text>
+
+          <text class="cat" x="400" y="36" text-anchor="middle">Folyamat</text>
+          <text class="cause" x="416" y="99" text-anchor="end">Leadás nincs rögzítve</text>
+          <text class="cause" x="437" y="139" text-anchor="end">Dolgozatot egyedül tűzik</text>
+          <text class="cause" x="458" y="179" text-anchor="end">Szóbeli könyvhirdetés</text>
+
+          <text class="cat" x="610" y="36" text-anchor="middle">Eszközök</text>
+          <text class="cause" x="626" y="99" text-anchor="end">Doboz a portán</text>
+          <text class="cause" x="647" y="139" text-anchor="end">Papíros napló</text>
+          <text class="cause" x="668" y="179" text-anchor="end">Faliújság, nem kereshető</text>
+
+          <text class="cat" x="190" y="414" text-anchor="middle">Információ</text>
+          <text class="cause" x="206" y="349" text-anchor="end">Mi van a portán?</text>
+          <text class="cause" x="227" y="309" text-anchor="end">Hány dolgozat esik egy napra?</text>
+          <text class="cause" x="248" y="269" text-anchor="end">Milyen használt könyv van?</text>
+
+          <text class="cat" x="400" y="414" text-anchor="middle">Környezet</text>
+          <text class="cause" x="416" y="349" text-anchor="end">Rövid szünetek</text>
+          <text class="cause" x="437" y="309" text-anchor="end">Sok osztály, sok tanár</text>
+          <text class="cause" x="458" y="269" text-anchor="end">Sok diák, sok tantárgy</text>
+
+          <text class="cat" x="610" y="414" text-anchor="middle">Szabályok</text>
+          <text class="cause" x="626" y="349" text-anchor="end">Nincs napi dolgozatkorlát</text>
+          <text class="cause" x="647" y="309" text-anchor="end">Nincs megőrzési határidő</text>
+          <text class="cause" x="668" y="269" text-anchor="end">Nincs hirdetési szabály</text>
+        </svg>
+      </div>
+
+      <h3>5 Miért</h3>
+      <h4>1. Talált tárgyak</h4>
+      <ol>
+        <li><strong>Miért marad gazdátlan a tárgy?</strong> Mert a gazdája nem tudja, hogy a portán van.</li>
+        <li><strong>Miért nem tudja?</strong> Mert nincs róla lista.</li>
+        <li><strong>Miért nincs lista?</strong> Mert leadáskor senki nem írja fel, mi került be.</li>
+        <li><strong>Miért nem írja fel senki?</strong> Mert papíron fáradságos, és nincs, aki ellenőrizné.</li>
+        <li><strong>Miért nincs más eszköz?</strong> Mert nincs egyszerű, fotóval is működő felület.</li>
+      </ol>
+      <h4>2. Dolgozatnaptár</h4>
+      <ol>
+        <li><strong>Miért torlódnak a dolgozatok?</strong> Mert több tanár ugyanarra a napra tervez.</li>
+        <li><strong>Miért?</strong> Mert nem látják egymás számonkéréseit.</li>
+        <li><strong>Miért nem látják?</strong> Mert mindenki a saját naplójába írja.</li>
+        <li><strong>Miért külön naplók?</strong> Mert nincs osztályonkénti közös naptár.</li>
+        <li><strong>Miért nincs?</strong> Mert senki nem vezeti, és nincs jelzés a torlódásról.</li>
+      </ol>
+      <h4>3. Tankönyvbörze</h4>
+      <ol>
+        <li><strong>Miért vesznek újat az alsóbb évesek?</strong> Mert nem tudják, hogy van használt.</li>
+        <li><strong>Miért nem tudják?</strong> Mert a felsőbb évesek nem hirdetik.</li>
+        <li><strong>Miért nem hirdetik?</strong> Mert nincs hova.</li>
+        <li><strong>Miért nem jó a faliújság?</strong> Mert nem szűrhető tantárgyra és évfolyamra.</li>
+        <li><strong>Miért nincs jobb?</strong> Mert nincs diákok közötti, keresésre épülő felület.</li>
+      </ol>
+    </section>
+
+    <section id="crazy8">
+      <h2>5. Ötletelés – Crazy 8s</h2>
+      <p>Nyolc gyors UI-koncepció a közös portálra. A zölddel jelölt négyet vittük tovább, ezekből készültek a <a href="https://www.figma.com/design/hCLiY46XTIukD7jxpJfkar">Figma drótvázak</a>.</p>
+      <ul class="tiles-sketch">
+        <li><figure class="tile-s"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="10" y="8" width="100" height="22" rx="3"/><rect class="f" x="10" y="34" width="100" height="22" rx="3"/><rect class="f" x="10" y="60" width="100" height="22" rx="3"/></svg><figcaption><strong>1. Egyetlen hosszú oldal</strong>Hosszú, áttekinthetetlen.</figcaption></figure></li>
+        <li><figure class="tile-s picked"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="8" y="14" width="32" height="62" rx="4"/><rect class="f" x="44" y="14" width="32" height="62" rx="4"/><rect class="f" x="80" y="14" width="32" height="62" rx="4"/><rect class="g" x="13" y="56" width="22" height="9" rx="2"/><rect class="g" x="49" y="56" width="22" height="9" rx="2"/><rect class="g" x="85" y="56" width="22" height="9" rx="2"/></svg><figcaption><strong>2. Kezdőlap csempékkel ✔</strong>Gyors tájékozódás, számokkal.</figcaption></figure></li>
+        <li><figure class="tile-s"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="6" y="6" width="28" height="78"/><rect class="l" x="40" y="6" width="74" height="78"/><path class="l" d="M46 16H100M46 28H90M46 40H96"/></svg><figcaption><strong>3. Oldalsó menü</strong>Mobilon sok helyet foglal.</figcaption></figure></li>
+        <li><figure class="tile-s picked"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="8" y="8" width="32" height="38" rx="3"/><rect class="f" x="44" y="8" width="32" height="38" rx="3"/><rect class="f" x="80" y="8" width="32" height="38" rx="3"/><rect class="f" x="8" y="50" width="32" height="34" rx="3"/><rect class="f" x="44" y="50" width="32" height="34" rx="3"/><rect class="f" x="80" y="50" width="32" height="34" rx="3"/><rect class="g" x="12" y="12" width="24" height="16" rx="2"/><rect class="g" x="48" y="12" width="24" height="16" rx="2"/><rect class="g" x="84" y="12" width="24" height="16" rx="2"/></svg><figcaption><strong>4. Kártyarács fotókkal ✔</strong>A talált tárgyak: a fotó a lényeg.</figcaption></figure></li>
+        <li><figure class="tile-s picked"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="6" y="10" width="19" height="14" rx="2"/><rect class="f" x="6" y="28" width="19" height="14" rx="2"/><rect class="f" x="31" y="10" width="19" height="14" rx="2"/><rect class="b" x="56" y="10" width="19" height="14" rx="2"/><rect class="b" x="56" y="28" width="19" height="14" rx="2"/><rect class="b" x="56" y="46" width="19" height="14" rx="2"/><rect class="b" x="56" y="64" width="19" height="14" rx="2"/><rect class="f" x="81" y="10" width="19" height="14" rx="2"/><rect class="f" x="81" y="28" width="19" height="14" rx="2"/><rect class="f" x="106" y="10" width="10" height="14" rx="2"/></svg><figcaption><strong>5. Heti oszlopos tábla ✔</strong>A torlódó nap piros.</figcaption></figure></li>
+        <li><figure class="tile-s"><svg viewBox="0 0 120 90" aria-hidden="true"><path class="l" d="M8 8H112V82H8Z M8 23H112 M8 38H112 M8 53H112 M8 68H112 M25 8V82 M42 8V82 M59 8V82 M76 8V82 M93 8V82"/><rect class="f" x="42" y="38" width="17" height="15"/></svg><figcaption><strong>6. Havi naptár</strong>Kevés hely a részletre.</figcaption></figure></li>
+        <li><figure class="tile-s picked"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="8" y="6" width="104" height="12" rx="3"/><rect class="l" x="8" y="24" width="104" height="16" rx="3"/><rect class="l" x="8" y="44" width="104" height="16" rx="3"/><rect class="l" x="8" y="64" width="104" height="16" rx="3"/><rect class="g" x="86" y="28" width="22" height="8" rx="3"/><rect class="g" x="86" y="48" width="22" height="8" rx="3"/><rect class="g" x="86" y="68" width="22" height="8" rx="3"/></svg><figcaption><strong>7. Hirdetéslista szűrősávval ✔</strong>A tankönyvbörze ismert mintája.</figcaption></figure></li>
+        <li><figure class="tile-s"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="8" y="8" width="70" height="14" rx="7"/><rect class="g" x="42" y="28" width="70" height="14" rx="7"/><rect class="f" x="8" y="48" width="70" height="14" rx="7"/><rect class="g" x="42" y="68" width="70" height="14" rx="7"/></svg><figcaption><strong>8. Üzenőfal / chat</strong>Nem szűrhető, nem kereshető.</figcaption></figure></li>
+      </ul>
+      <p class="muted">A papíros vázlatok fotóit a csapat a <code>docs/img/</code> mappába teszi.</p>
+    </section>
+
+    <section id="moscow">
+      <h2>6. Priorizálás – MoSCoW</h2>
+      <div class="moscow">
+        <div class="m"><h3>Must have</h3><ul><li>Talált tárgyak: fotós lista, szűrés kategóriára és dátumra, „Ez az enyém!", új tárgy űrlap</li><li>Dolgozatnaptár: heti nézet, új dolgozat, figyelmeztetés napi 3 fölött</li><li>Tankönyvbörze: hirdetésfeladás, keresés tantárgyra és évfolyamra, kedvencek</li><li>Adatmegőrzés, validáció, reszponzivitás</li></ul></div>
+        <div class="s"><h3>Should have</h3><ul><li>Fotófeltöltés kicsinyítéssel</li><li>Osztályszűrő, hétváltás</li><li>Szöveges keresés, rendezés</li><li>Törlés megerősítéssel</li><li>Kezdőlapi számok, toast</li></ul></div>
+        <div class="c"><h3>Could have</h3><ul><li>Igénylés visszavonása</li><li>Demó adatok</li><li>Billentyűzetes kezelés</li></ul></div>
+        <div class="w"><h3>Won't have</h3><ul><li>Bejelentkezés</li><li>Szerveroldali adatbázis</li><li>E-mail értesítés</li><li>Üzenetküldés</li><li>Sötét téma, export</li></ul></div>
+      </div>
+    </section>
+
+    <section id="git">
+      <h2>7. Verziókövetés</h2>
+      <div class="table-wrap"><table class="doc-table">
+        <thead><tr><th>Ág</th><th>Cél</th></tr></thead>
+        <tbody>
+          <tr><td><code>main</code></td><td>Stabil, kiadható állapot; csak a <code>dev</code>-ből kap merge-et.</td></tr>
+          <tr><td><code>dev</code></td><td>Integrációs ág: ide olvadnak a kész feature-ök.</td></tr>
+          <tr><td><code>feature/*</code></td><td>Egy-egy funkció (<code>alapok</code>, <code>mag</code>, <code>talalt</code>, <code>dolgozat</code>, <code>konyv</code>, <code>kezdolap</code>, <code>reszponziv</code>).</td></tr>
+          <tr><td><code>docs/*</code></td><td>Dokumentáció külön ágon.</td></tr>
+        </tbody>
+      </table></div>
+      <p>Commit üzenet formátum: <code>típus: rövid magyar leírás</code> (<code>feat</code>, <code>fix</code>, <code>style</code>, <code>test</code>, <code>docs</code>, <code>refactor</code>, <code>chore</code>). Az előzményeket a <code>git log --oneline --graph --all</code> parancs mutatja.</p>
+    </section>
+
+    <section id="teszt">
+      <h2>8. Tesztelés</h2>
+      <h3>Automata egységtesztek</h3>
+      <p>Az üzleti logika (<code>js/logic/</code>, <code>js/core/dates.js</code>) DOM-független, Node-ban tesztelhető: <code>node --test</code> → <span class="ok">40 teszt sikeres</span> (dátumok 8, talált tárgyak 13, dolgozatnaptár 9, tankönyvbörze 10).</p>
+      <h3>Kézi tesztek</h3>
+      <div class="table-wrap"><table class="doc-table">
+        <thead><tr><th>Modul</th><th>Teszt</th><th>Eredmény</th></tr></thead>
+        <tbody>
+          <tr><td>Talált tárgyak</td><td>Lista, szűrés kategóriára (Ruházat: 2) és dátumra (utolsó 3 nap: 3), igényeltek elrejtése</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Talált tárgyak</td><td>„Ez az enyém!": üres névre hiba, érvényes névre „Igényelve", visszavonás, törlés megerősítéssel</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Talált tárgyak</td><td>Új tárgy: üres űrlap hibái, jövőbeli dátum elutasítva, fotó kicsinyítve JPEG-re, szöveges fájl elutasítva</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Dolgozatnaptár</td><td>Heti nézet 5 nap, torlódás-figyelmeztetés (9.A: 4 számonkérés), osztályszűrő, hétváltás</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Dolgozatnaptár</td><td>Új dolgozat: hétvége elutasítva, élő napi terhelés-jelzés, megerősítés a 4. felvételekor (Mégse: nem menti, OK: menti), törlés</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Tankönyvbörze</td><td>Keresés (fizika: 1), tantárgy (matek: 1), évfolyam (9.: 3), rendezés ár szerint, kedvencek (megmaradnak a tárolóban)</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Tankönyvbörze</td><td>Hirdetésfeladás: hibás ár és elérhetőség elutasítva, 0 Ft = „Ingyen", telefonszám <code>tel:</code> linkként, törlés megerősítéssel</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Reszponzív</td><td>375 px: mind a 7 nézeten nincs vízszintes görgetés, hamburger menü, heti tábla egy oszlopban; 1200 px: 4 oszlopos kártyarács</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Cross-browser</td><td>Firefox, Safari, Edge (eddig: Chromium alapú beépített böngésző)</td><td class="todo">még nem tesztelt</td></tr>
+          <tr><td>Valódi telefon</td><td>iOS/Android, fotó készítése kamerával a feltöltéshez</td><td class="todo">még nem tesztelt</td></tr>
+        </tbody>
+      </table></div>
+      <p>A hibákat a Trello „🐞 Hibák (Bugok)" oszlopában rögzítjük.</p>
+    </section>
+
+    <section id="prezentacio">
+      <h2>9. Prezentáció (10 perc)</h2>
+      <div class="table-wrap"><table class="doc-table">
+        <thead><tr><th>Idő</th><th>Rész</th><th>Mit mutatunk?</th></tr></thead>
+        <tbody>
+          <tr><td>0:00–1:30</td><td>A probléma és a tervezés</td><td>A három probléma, Ishikawa/5 Miért, szerepköri mátrix (ki miért felelt)</td></tr>
+          <tr><td>1:30–5:30</td><td>Élő demó</td><td>Talált tárgy felvétele fotóval és igénylése → dolgozat felvétele, torlódás-figyelmeztetés → könyv hirdetése, keresés, kedvenc; mobil nézet; tesztelés menete</td></tr>
+          <tr><td>5:30–7:00</td><td>Projektmenedzsment</td><td>Trello tábla, haladás értékelése</td></tr>
+          <tr><td>7:00–8:30</td><td>Verziókövetés</td><td><code>git log --graph</code>: aktív commitok, ágak és merge-ök</td></tr>
+          <tr><td>8:30–9:30</td><td>Jövőkép</td><td>Bejelentkezés + szerver, értesítések, üzenetküldés a börzén</td></tr>
+          <tr><td>9:30–10:00</td><td>Kérdések</td><td>—</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+
+    <section id="retro">
+      <h2>10. Retrospektív és jövőkép</h2>
+      <div class="moscow">
+        <div class="s"><h3>Mi ment jól?</h3><p class="muted">A csapat tölti ki a retrospektíven.</p></div>
+        <div class="m"><h3>Min kell javítani?</h3><p class="muted">A csapat tölti ki a retrospektíven.</p></div>
+        <div class="c"><h3>Vállalások</h3><p class="muted">A csapat tölti ki a retrospektíven.</p></div>
+      </div>
+      <h3>Továbbfejlesztési lehetőségek</h3>
+      <ul>
+        <li>Bejelentkezés és jogosultságok (diák, tanár, portás): csak a saját hirdetés vagy tárgy törölhető, a dolgozatot csak a tanár vehet fel</li>
+        <li>Szerveroldali adatbázis, hogy több gépen közösek legyenek az adatok</li>
+        <li>E-mail vagy push értesítés (igényelt tárgy, torlódó nap), üzenetküldés a börzén</li>
+        <li>Ünnepnapok és tanítási szünetek kezelése a dolgozatnaptárban</li>
+      </ul>
+    </section>
+
+    <section id="ertekeles">
+      <h2>11. Hol teljesül az értékelési szempont?</h2>
+      <div class="table-wrap"><table class="doc-table">
+        <thead><tr><th>Terület</th><th>Bizonyíték a projektben</th></tr></thead>
+        <tbody>
+          <tr><td>Szakmai tartalom és kódminőség</td><td>Három működő modul, rétegezett kód (adat / logika / tárolás / nézetek), szemantikus HTML, ARIA, 40 egységteszt, reszponzív UI</td></tr>
+          <tr><td>Verziókövetés</td><td>Beszédes, típusos commit üzenetek; <code>main</code> / <code>dev</code> / <code>feature/*</code> ágak és merge-ök</td></tr>
+          <tr><td>Projektmenedzsment és szerepkörök</td><td>Trello tábla, szerepköri mátrix, MoSCoW</td></tr>
+          <tr><td>Csapatmunka és kommunikáció</td><td>Feladatosztás, retrospektív</td></tr>
+          <tr><td>Prezentáció és értékelés</td><td>Ez a dokumentáció, a 10 perces forgatókönyv, retrospektív</td></tr>
+        </tbody>
+      </table></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container"><p>Sulipont · „Problémából Szoftver – Agilis Fejlesztés"</p></div>
+  </footer>
+</body>
+</html>
