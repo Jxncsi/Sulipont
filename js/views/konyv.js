@@ -16,29 +16,48 @@
     return document.createTextNode(contact);
   }
 
+  const subjectClass = (subject) => `sub-${Math.max(0, SUBJECTS.indexOf(subject))}`;
+
+  /** Ármatrica: 1 800 Ft → „1 800 / Ft", 0 → „Ingyen". */
+  function priceSticker(price) {
+    if (price === 0) return el('div', { class: 'price price-free' }, el('b', { text: 'Ingyen' }));
+    return el('div', { class: 'price' }, el('b', { text: B.formatPrice(price).replace(/ Ft$/, '') }), el('small', { text: 'Ft' }));
+  }
+
+  /** A kedvenc-gombot helyben frissítjük (így a szív animációja nem indul újra minden újrarajzoláskor). */
+  function paintFav(btn, b, on) {
+    btn.classList.toggle('is-on', on);
+    btn.setAttribute('aria-pressed', String(on));
+    btn.setAttribute('aria-label', on ? `Kivétel a kedvencek közül: ${b.title}` : `Kedvencnek jelölöm: ${b.title}`);
+    btn.replaceChildren(S.ui.icon('heart', on ? 'var(--tomato)' : 'var(--card)'));
+  }
+
   function favButton(b) {
-    const on = favs().has(b.id);
-    return el('button', {
-      class: 'fav' + (on ? ' is-on' : ''), type: 'button', 'aria-pressed': String(on),
-      'aria-label': on ? `Kivétel a kedvencek közül: ${b.title}` : `Kedvencnek jelölöm: ${b.title}`,
-      onclick: () => { favs().toggle(b.id); render(); },
-      text: on ? '♥' : '♡',
+    const btn = el('button', { class: 'fav', type: 'button' });
+    paintFav(btn, b, favs().has(b.id));
+    btn.addEventListener('click', () => {
+      const on = favs().toggle(b.id);
+      paintFav(btn, b, on);
+      if ($('#k-fav').checked) render();                       // „csak a kedvenceim" nézetben a lista változik
+      else if (on) { btn.classList.add('beat'); btn.addEventListener('animationend', () => btn.classList.remove('beat'), { once: true }); }
     });
+    return btn;
   }
 
   function card(b) {
-    return el('article', { class: 'card book' },
-      el('div', { class: 'book-head' }, el('h3', { text: b.title }), favButton(b)),
+    return el('article', { class: `book ${subjectClass(b.subject)}` },
+      priceSticker(b.price),
       el('ul', { class: 'chips', 'aria-label': 'Jellemzők' },
         el('li', { class: 'chip', text: b.subject }),
-        el('li', { class: 'chip chip-plain', text: `${b.grade}. évfolyam` }),
+        el('li', { class: 'chip chip-plain', text: `${b.grade}. évf.` }),
         el('li', { class: 'chip ' + (CONDITION_CLASS[b.condition] || ''), text: b.condition })),
-      el('p', { class: 'price', text: B.formatPrice(b.price) }),
-      b.description ? el('p', { class: 'meta', text: b.description }) : null,
-      el('p', { class: 'meta' }, 'Eladó: ', b.seller),
+      el('h3', { text: b.title }),
+      b.description ? el('p', { class: 'book-note', text: b.description }) : null,
+      el('p', { class: 'meta' }, 'Eladó: ', el('strong', { text: b.seller })),
       el('p', { class: 'meta' }, 'Kapcsolat: ', contactNode(b.contact)),
       el('div', { class: 'card-actions' },
-        el('button', { class: 'btn btn-small btn-ghost', type: 'button', text: 'Hirdetés törlése', 'aria-label': `Hirdetés törlése: ${b.title}`, onclick: () => remove(b) })));
+        favButton(b),
+        el('button', { class: 'btn btn-small btn-ghost', type: 'button', 'aria-label': `Hirdetés törlése: ${b.title}`, onclick: () => remove(b) }, S.ui.icon('trash'), 'Törlés')));
   }
 
   async function remove(b) {
