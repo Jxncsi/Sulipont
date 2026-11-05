@@ -10,15 +10,18 @@
 
   const startMonday = () => D.mondayOf(D.nextSchoolDay(S.state.today));
 
+  /** Tantárgyszín: a SUBJECTS sorrendje szerint (a CSS-ben .sub-0 … .sub-10). */
+  const subjectClass = (subject) => `sub-${Math.max(0, S.data.SUBJECTS.indexOf(subject))}`;
+
   function examCard(x, showClass) {
-    return el('article', { class: 'exam' },
+    return el('article', { class: `exam ${subjectClass(x.subject)}` },
       el('div', { class: 'exam-head' },
         el('strong', { text: x.subject }),
         el('span', { class: 'chip', text: x.type }),
-        showClass ? el('span', { class: 'chip chip-plain', text: x.className }) : null),
-      el('p', { class: 'exam-meta', text: x.teacher }),
-      x.topic ? el('p', { class: 'exam-meta', text: x.topic }) : null,
-      el('button', { class: 'btn btn-small btn-ghost', type: 'button', text: 'Törlés', 'aria-label': `Törlés: ${x.className} ${x.subject}`, onclick: () => remove(x) }));
+        showClass ? el('span', { class: 'chip', text: x.className }) : null),
+      el('p', { class: 'exam-teacher', text: x.teacher }),
+      x.topic ? el('p', { class: 'exam-topic', text: x.topic }) : null,
+      el('button', { class: 'exam-del', type: 'button', title: 'Törlés', 'aria-label': `Törlés: ${x.className} ${x.subject}`, onclick: () => remove(x) }, S.ui.icon('trash')));
   }
 
   function dayColumn({ date, items, over }) {
@@ -27,9 +30,11 @@
     if (over.length) classes.push('is-over');
     return el('section', { class: classes.join(' '), 'aria-label': `${D.dayName(date)} ${D.shortDate(date)}` },
       el('header', { class: 'day-head' },
-        el('h3', { text: `${D.dayName(date)} ${D.shortDate(date)}` }),
-        el('span', { class: 'chip ' + (over.length ? 'chip-bad' : 'chip-plain'), text: `${items.length} db` })),
-      items.length ? items.map((x) => examCard(x, !st.className)) : el('p', { class: 'day-empty', text: 'Nincs számonkérés' }));
+        el('h3', { text: D.dayName(date) }),
+        el('span', { class: 'day-date', text: D.shortDate(date) }),
+        el('span', { class: 'day-count', text: String(items.length), title: `${items.length} számonkérés` })),
+      el('div', { class: 'day-body' },
+        items.length ? items.map((x) => examCard(x, !st.className)) : el('p', { class: 'day-empty', text: 'szabad nap' })));
   }
 
   function render() {
@@ -41,7 +46,8 @@
     const warnings = days.flatMap((d) => d.over);
     const box = $('#week-warnings');
     box.hidden = warnings.length === 0;
-    box.replaceChildren(...warnings.map((w) => el('li', { text: `Figyelem: a(z) ${w.className} osztálynak ${D.dayName(w.date).toLowerCase()} (${D.shortDate(w.date)}) ${w.count} számonkérése van, naponta legfeljebb ${E.MAX} javasolt.` })));
+    box.replaceChildren(...warnings.map((w) => el('li', {}, S.ui.icon('alert', 'var(--sun)'),
+      el('span', { text: `Figyelem: a(z) ${w.className} osztálynak ${D.dayName(w.date).toLowerCase()} (${D.shortDate(w.date)}) ${w.count} számonkérése van, naponta legfeljebb ${E.MAX} javasolt.` }))));
 
     $('#week-board').replaceChildren(...days.map(dayColumn));
   }
