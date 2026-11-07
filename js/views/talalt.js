@@ -3,16 +3,21 @@
   const S = root.Sulipont;
   const { $, el, fillSelect, toast, confirmDialog } = S.ui;
   const D = S.dates, F = S.found;
-  const { CATEGORIES, CATEGORY_ICONS } = S.data;
+  const { CATEGORIES } = S.data;
 
   const repo = () => S.repos.found;
 
-  function media(it) {
+  /** Polaroid: a feltöltött fotó, vagy csíkos háttér a kategória rajzával. Az „Igényelve" bélyeg ráütve. */
+  function polaroid(it, claimed) {
+    const { name, tint } = S.ui.categoryIcon(it.category);
     // Csak a saját kódunk által előállított képet jelenítjük meg.
-    if (typeof it.photo === 'string' && it.photo.startsWith('data:image/')) {
-      return el('img', { class: 'card-photo', src: it.photo, alt: it.name, loading: 'lazy' });
-    }
-    return el('div', { class: 'card-photo card-photo-empty', 'aria-hidden': 'true', text: CATEGORY_ICONS[it.category] || '📦' });
+    const hasPhoto = typeof it.photo === 'string' && it.photo.startsWith('data:image/');
+    const picture = hasPhoto
+      ? el('img', { src: it.photo, alt: it.name, loading: 'lazy' })
+      : el('div', { class: 'photo-ph', style: `--tint:${tint}`, 'aria-hidden': 'true' }, S.ui.icon(name, tint), el('span', { text: 'Nincs fotó' }));
+    return el('figure', { class: 'polaroid' }, picture,
+      claimed ? el('span', { class: 'stamp', text: 'Igényelve' }) : null,
+      el('figcaption', { text: `${D.shortDate(it.date)} · ${F.agoLabel(it.date, S.state.today)}` }));
   }
 
   function actions(it) {
@@ -21,7 +26,7 @@
       : el('button', { class: 'btn btn-primary', type: 'button', text: 'Ez az enyém!', 'aria-label': `Ez az enyém: ${it.name}`, onclick: () => openClaim(it) });
     return [
       main,
-      el('button', { class: 'btn btn-small btn-ghost', type: 'button', text: 'Törlés', 'aria-label': `Törlés: ${it.name}`, onclick: () => remove(it) }),
+      el('button', { class: 'btn btn-small btn-ghost', type: 'button', 'aria-label': `Törlés: ${it.name}`, onclick: () => remove(it) }, S.ui.icon('trash'), 'Törlés'),
     ];
   }
 
@@ -60,16 +65,13 @@
 
   function card(it) {
     const claimed = it.status === 'igenyelve';
-    return el('article', { class: 'card item' + (claimed ? ' is-claimed' : '') },
-      media(it),
+    return el('article', { class: 'item' + (claimed ? ' is-claimed' : '') },
+      polaroid(it, claimed),
       el('h3', { text: it.name }),
-      el('ul', { class: 'chips', 'aria-label': 'Jellemzők' },
-        el('li', { class: 'chip', text: it.category }),
-        claimed && el('li', { class: 'chip chip-warn', text: 'Igényelve' })),
-      el('p', { class: 'meta', text: `Hol: ${it.place}` }),
-      el('p', { class: 'meta', text: `Mikor: ${D.formatDate(it.date)}, ${F.agoLabel(it.date, S.state.today)}` }),
+      el('ul', { class: 'chips', 'aria-label': 'Kategória' }, el('li', { class: 'chip', text: it.category })),
+      el('p', { class: 'where' }, el('small', { text: 'Hol:' }), ' ', it.place),
       it.description ? el('p', { class: 'meta', text: it.description }) : null,
-      claimed ? el('p', { class: 'meta', text: `Igényelte: ${it.claimedBy}` }) : null,
+      claimed ? el('p', { class: 'meta' }, 'Igényelte: ', el('strong', { text: it.claimedBy })) : null,
       el('div', { class: 'card-actions' }, actions(it)));
   }
 

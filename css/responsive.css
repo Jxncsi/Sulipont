@@ -1,55 +1,79 @@
 /* Reszponzív töréspontok: az alapstílusok tágas képernyőre szólnak, itt szűkítünk */
 
-/* Nagyobb tablet és kisebb */
-@media (max-width: 1000px) {
+main { overflow-x: clip; }
+.tab { white-space: nowrap; }
+
+/* ---------- Nagyobb tablet ---------- */
+@media (max-width: 1100px) {
+  .modules { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .modules li:nth-child(3) { grid-column: 1 / -1; }
+  .modules li:nth-child(2) { transform: rotate(.9deg); }
   .filters-5 { grid-template-columns: 1fr 1fr; }
   .filters-5 .field:first-child { grid-column: 1 / -1; }
-  .week { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .week { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 1.8rem; }
 }
 
-/* Telefon */
-@media (max-width: 720px) {
-  main { padding-block: 1rem 2rem; }
-  .hero { padding-block: 1rem; }
-  .page-head .btn { width: 100%; }
+/* ---------- Hamburger: a fülek lenyíló „mappák" lesznek ---------- */
+@media (max-width: 980px) {
+  .header-inner { position: static; align-items: center; padding-block: .7rem; overflow: visible; }
+  .brand { padding-bottom: 0; }
 
-  /* Hamburger menü */
-  .header-inner { position: static; }
   .nav-toggle {
     display: inline-flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px;
-    width: 2.75rem; height: 2.75rem; padding: 0;
-    border: 1px solid var(--line); border-radius: var(--radius-sm); background: var(--surface); cursor: pointer;
+    width: 2.9rem; height: 2.9rem; padding: 0;
+    border: var(--bw) solid var(--ink); border-radius: var(--radius); background: var(--sun); box-shadow: 3px 3px 0 var(--ink); cursor: pointer;
   }
-  .nav-toggle span { display: block; width: 1.3rem; height: 2px; border-radius: 2px; background: var(--text); transition: transform .2s, opacity .2s; }
-  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .nav-toggle:active { transform: translate(3px, 3px); box-shadow: none; }
+  .nav-toggle span { display: block; width: 1.4rem; height: 3px; border-radius: 2px; background: var(--ink); transition: transform .2s, opacity .2s; }
+  .nav-toggle[aria-expanded="true"] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
   .nav-toggle[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
-  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  .nav-toggle[aria-expanded="true"] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
 
   .site-nav {
     display: none; position: absolute; top: 100%; left: 0; right: 0;
-    flex-direction: column; align-items: stretch; gap: .15rem;
-    padding: .5rem 1rem 1rem; background: var(--surface);
-    border-bottom: 1px solid var(--line); box-shadow: var(--shadow);
+    flex-direction: column; align-items: stretch; gap: .55rem;
+    padding: 1rem; border-bottom: 3px solid var(--ink); background-color: var(--paper); background-image: var(--paper-grain);
+    box-shadow: 0 10px 0 rgb(25 21 15 / 14%);
   }
   .site-nav.open { display: flex; }
-  .site-nav a { padding: .8rem .9rem; }
+  .tab { padding: .85rem 1rem; border: var(--bw) solid var(--ink); border-radius: var(--radius); box-shadow: 3px 3px 0 var(--ink); transform: none; font-size: 1.05rem; }
+  .tab:hover { transform: none; }
+  .tab[aria-current="page"] { padding-bottom: .85rem; outline: 3px solid var(--ink); outline-offset: 2px; }
+}
 
-  /* Szűrők, űrlapok és a heti tábla egy oszlopban */
+/* ---------- Telefon ---------- */
+@media (max-width: 720px) {
+  main { padding-block: 1.4rem 3rem; }
+  .hero { grid-template-columns: 1fr; gap: 1.4rem; padding-bottom: 2rem; }
+  .leaf { justify-self: start; width: 8rem; transform: rotate(-3deg); order: -1; }
+  .leaf-day { font-size: 4rem; }
+  .modules { grid-template-columns: 1fr; gap: 1.8rem; }
+  .modules li, .modules li:nth-child(2), .modules li:nth-child(3) { transform: none; grid-column: auto; }
+  .modules li:nth-child(odd) { transform: rotate(-.6deg); }
+  .modules li:nth-child(even) { transform: rotate(.5deg); }
+  .page-head .btn { width: 100%; }
+
   .filters-5 { grid-template-columns: 1fr; }
-  .week { grid-template-columns: 1fr; }
   .cal-controls { flex-direction: column; align-items: stretch; }
   .week-nav { justify-content: space-between; }
   .week-nav strong { order: -1; flex: 1 1 100%; }
   .week-nav .btn { flex: 1; white-space: nowrap; padding-inline: .5rem; }
+
+  #found-grid { padding: 2.4rem 1rem 1.6rem; border-width: 9px; }
+  .week { grid-template-columns: 1fr; padding-inline: .8rem; }
+  .day.is-over::after { right: .5rem; }
   .actions .btn { flex: 1 1 100%; }
 
-  .toast-region { inset: auto .75rem .75rem .75rem; }
+  .price { right: -.45rem; }
+  .toast-region { inset: auto .8rem .9rem .8rem; }
   dialog .actions .btn { flex: 1; }
 }
 
-/* Nagyon keskeny telefon */
+/* ---------- Nagyon keskeny telefon ---------- */
 @media (max-width: 420px) {
   .row { grid-template-columns: 1fr; }
   .grid { grid-template-columns: 1fr; }
-  .tile-num { font-size: 2rem; }
+  .brand { font-size: 1.4rem; }
+  .brand-mark { width: 2.3rem; height: 2.3rem; }
+  .mod-num { font-size: 3.4rem; }
 }

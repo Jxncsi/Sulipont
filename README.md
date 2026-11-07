@@ -10,6 +10,10 @@ Három valós iskolai probléma, egy közös felületen:
 | **Dolgozatnaptár** | A számonkérések torlódnak, mert a tanárok nem látják egymáséit. | Heti nézet osztályonként, új dolgozat felvétele, figyelmeztetés, ha egy napra háromnál több esik. |
 | **Tankönyvbörze** | A felsőbb évesek használt könyvei kárba vesznek, az alsóbb évesek újat vesznek. | Hirdetésfeladás, keresés tantárgyra és évfolyamra, kedvencek. |
 
+## Arculat
+
+Az oldal az iskolai tárgyakból épül fel: parafatábla és polaroidok a talált tárgyaknak, spirálos tervező a dolgozatoknak, iskolatábla és könyvborítók a börzének. Saját rajzolt ikonok (nincs emoji), saját színek, négy betűtípus. Részletek: [docs/09-arculat.md](docs/09-arculat.md). A betűk nyílt licencűek (OFL) és a `fonts/` mappában vannak, így internet nélkül is működik minden.
+
 ## Futtatás
 
 Nincs build lépés. Elég megnyitni az `index.html` fájlt böngészőben, vagy helyi szerverrel:
