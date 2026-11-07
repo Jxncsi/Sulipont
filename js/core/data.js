@@ -2,7 +2,6 @@
 (function (root) {
   const data = {
     CATEGORIES: ['Ruházat', 'Kulacs és étel', 'Írószer', 'Táska', 'Kulcs és ékszer', 'Elektronika', 'Sport', 'Egyéb'],
-    CATEGORY_ICONS: { 'Ruházat': '👕', 'Kulacs és étel': '🥤', 'Írószer': '✏️', 'Táska': '🎒', 'Kulcs és ékszer': '🔑', 'Elektronika': '🎧', 'Sport': '⚽', 'Egyéb': '📦' },
 
     SUBJECTS: ['Matematika', 'Magyar', 'Történelem', 'Angol', 'Német', 'Fizika', 'Kémia', 'Biológia', 'Földrajz', 'Informatika', 'Egyéb'],
     GRADES: [9, 10, 11, 12],
