@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dolgozatnaptár – Sulipont</title>
+  <meta name="description" content="Heti dolgozat- és beadandónaptár osztályonként, figyelmeztetéssel, ha egy napra háromnál több számonkérés esik.">
+  <link rel="stylesheet" href="dolgozat.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Ugrás a tartalomra</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="talalt.html" aria-label="Sulipont – kezdőlap">
+        <svg class="brand-mark" viewBox="0 0 56 56" aria-hidden="true">
+          <text x="28" y="40" text-anchor="middle">S</text>
+          <path d="M9 31C5 16 21 6 36 9c14 3 17 20 7 30-9 9-27 10-35-3"/>
+        </svg>
+        <span class="brand-name">Sulipont</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menü megnyitása">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Főmenü">
+        <a class="tab tab-found" href="talalt.html">Talált tárgyak</a>
+        <a class="tab tab-exams" href="dolgozat.html" aria-current="page">Dolgozatnaptár</a>
+        <a class="tab tab-books" href="konyv.html">Tankönyvbörze</a>
+        <a class="tab tab-docs" href="../docs.html">Dokumentáció</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container" tabindex="-1">
+    <div class="page-head">
+      <div>
+        <h1>Dolgozatnaptár</h1>
+        <p class="lead">Heti nézet osztályonként. Ha egy osztálynak egy napra háromnál több számonkérés esik, figyelmeztetünk.</p>
+        <button class="btn btn-primary" id="new-btn" type="button">+ Új dolgozat felvétele</button>
+      </div>
+      <div class="leaf" aria-hidden="true">
+        <span class="leaf-month" id="leaf-month"></span>
+        <strong class="leaf-day" id="leaf-day"></strong>
+        <span class="leaf-week" id="leaf-week"></span>
+      </div>
+    </div>
+
+    <!-- Új dolgozat felvétele (a gombra nyílik) -->
+    <form class="panel form form-narrow" id="exam-form" novalidate hidden>
+      <div class="row">
+        <div class="field">
+          <label for="d-class">Osztály</label>
+          <select id="d-class" required aria-describedby="err-d-class"></select>
+          <p class="error" id="err-d-class" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="d-date">Időpont</label>
+          <input type="date" id="d-date" required aria-describedby="err-d-date">
+          <p class="error" id="err-d-date" role="alert"></p>
+        </div>
+      </div>
+      <p class="hint" id="d-hint" aria-live="polite"></p>
+      <div class="row">
+        <div class="field">
+          <label for="d-subject">Tantárgy</label>
+          <select id="d-subject" required aria-describedby="err-d-subject"></select>
+          <p class="error" id="err-d-subject" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="d-type">Típus</label>
+          <select id="d-type" required aria-describedby="err-d-type"></select>
+          <p class="error" id="err-d-type" role="alert"></p>
+        </div>
+      </div>
+      <div class="field">
+        <label for="d-teacher">Tanár neve</label>
+        <input type="text" id="d-teacher" maxlength="60" required aria-describedby="err-d-teacher">
+        <p class="error" id="err-d-teacher" role="alert"></p>
+      </div>
+      <div class="field">
+        <label for="d-topic">Téma (nem kötelező)</label>
+        <input type="text" id="d-topic" maxlength="80" placeholder="pl. másodfokú egyenletek">
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Felvétel a naptárba</button>
+        <button class="btn" type="button" id="d-cancel">Mégse</button>
+      </div>
+    </form>
+
+    <div class="cal-controls">
+      <div class="field">
+        <label for="w-class">Osztály</label>
+        <select id="w-class"></select>
+      </div>
+      <div class="week-nav" role="group" aria-label="Hét váltása">
+        <button class="btn" type="button" id="week-prev" aria-label="Előző hét">‹ Előző</button>
+        <strong id="week-label" aria-live="polite"></strong>
+        <button class="btn" type="button" id="week-next" aria-label="Következő hét">Következő ›</button>
+        <button class="btn btn-ghost" type="button" id="week-today">Ma</button>
+      </div>
+    </div>
+    <ul class="warnings" id="week-warnings" aria-label="Figyelmeztetések" hidden></ul>
+    <div class="week" id="week-board"></div>
+  </main>
+
+  <footer class="site-footer"></footer>
+
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+  <!-- Megerősítés (törlés, torlódás) -->
+  <dialog id="confirm-dialog" aria-labelledby="dlg-title">
+    <form method="dialog">
+      <h2 id="dlg-title"></h2>
+      <p id="dlg-text"></p>
+      <div class="actions">
+        <button class="btn" value="cancel">Mégse</button>
+        <button class="btn btn-danger" value="ok" id="dlg-ok">Rendben</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="dolgozat.js"></script>
+</body>
+</html>

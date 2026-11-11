@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Talált tárgyak – Sulipont</title>
+  <meta name="description" content="Mi van a portán? Fotós lista a talált tárgyakról, szűréssel és „Ez az enyém!” jelzéssel.">
+  <link rel="stylesheet" href="talalt.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Ugrás a tartalomra</a>
+
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="talalt.html" aria-label="Sulipont – kezdőlap">
+        <svg class="brand-mark" viewBox="0 0 56 56" aria-hidden="true">
+          <text x="28" y="40" text-anchor="middle">S</text>
+          <path d="M9 31C5 16 21 6 36 9c14 3 17 20 7 30-9 9-27 10-35-3"/>
+        </svg>
+        <span class="brand-name">Sulipont</span>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Menü megnyitása">
+        <span></span><span></span><span></span>
+      </button>
+      <nav class="site-nav" id="site-nav" aria-label="Főmenü">
+        <a class="tab tab-found" href="talalt.html" aria-current="page">Talált tárgyak</a>
+        <a class="tab tab-exams" href="dolgozat.html">Dolgozatnaptár</a>
+        <a class="tab tab-books" href="konyv.html">Tankönyvbörze</a>
+        <a class="tab tab-docs" href="../docs.html">Dokumentáció</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="container" tabindex="-1">
+    <div class="page-head">
+      <div>
+        <h1>Talált tárgyak</h1>
+        <p class="lead">Mi van a portán? Szűrj kategóriára és dátumra, és jelezd, ha a tiéd.</p>
+        <button class="btn btn-primary" id="new-btn" type="button">+ Új tárgy felvétele</button>
+      </div>
+      <div class="leaf" aria-hidden="true">
+        <span class="leaf-month" id="leaf-month"></span>
+        <strong class="leaf-day" id="leaf-day"></strong>
+        <span class="leaf-week" id="leaf-week"></span>
+      </div>
+    </div>
+
+    <!-- Új tárgy felvétele (a gombra nyílik) -->
+    <form class="panel form form-narrow" id="found-form" novalidate hidden>
+      <div class="field">
+        <label for="t-name">Megnevezés</label>
+        <input type="text" id="t-name" maxlength="60" placeholder="pl. szürke kapucnis pulcsi" required aria-describedby="err-t-name">
+        <p class="error" id="err-t-name" role="alert"></p>
+      </div>
+      <div class="row">
+        <div class="field">
+          <label for="t-category">Kategória</label>
+          <select id="t-category" required aria-describedby="err-t-category"></select>
+          <p class="error" id="err-t-category" role="alert"></p>
+        </div>
+        <div class="field">
+          <label for="t-date">Mikor találták?</label>
+          <input type="date" id="t-date" required aria-describedby="err-t-date">
+          <p class="error" id="err-t-date" role="alert"></p>
+        </div>
+      </div>
+      <div class="field">
+        <label for="t-place">Hol találták?</label>
+        <input type="text" id="t-place" maxlength="60" placeholder="pl. tornaterem, öltöző" required aria-describedby="err-t-place">
+        <p class="error" id="err-t-place" role="alert"></p>
+      </div>
+      <div class="field">
+        <label for="t-desc">Leírás (nem kötelező)</label>
+        <textarea id="t-desc" rows="3" maxlength="200" placeholder="szín, márka, jelzés…"></textarea>
+      </div>
+      <div class="field">
+        <label for="t-photo">Fotó (nem kötelező)</label>
+        <input type="file" id="t-photo" accept="image/*" aria-describedby="err-t-photo">
+        <p class="error" id="err-t-photo" role="alert"></p>
+        <div class="photo-preview" id="t-preview" hidden>
+          <img alt="A kiválasztott fotó előnézete" id="t-preview-img">
+          <button class="btn btn-small" type="button" id="t-photo-clear">Fotó eltávolítása</button>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary" type="submit">Tárgy felvétele</button>
+        <button class="btn" type="button" id="t-cancel">Mégse</button>
+      </div>
+    </form>
+
+    <form class="filters filters-5" id="found-filters" role="search" aria-label="Talált tárgyak szűrése">
+      <div class="field">
+        <label for="f-q">Keresés</label>
+        <input type="search" id="f-q" placeholder="pl. pulcsi" autocomplete="off">
+      </div>
+      <div class="field">
+        <label for="f-cat">Kategória</label>
+        <select id="f-cat"></select>
+      </div>
+      <div class="field">
+        <label for="f-from">Mettől</label>
+        <input type="date" id="f-from">
+      </div>
+      <div class="field">
+        <label for="f-to">Meddig</label>
+        <input type="date" id="f-to">
+      </div>
+      <label class="check"><input type="checkbox" id="f-hide"> Igényelteket elrejtem</label>
+    </form>
+    <p class="muted" id="found-count" aria-live="polite"></p>
+    <div class="grid" id="found-grid"></div>
+  </main>
+
+  <footer class="site-footer"></footer>
+
+  <div class="toast-region" id="toast-region" aria-live="polite"></div>
+
+  <!-- „Ez az enyém!" -->
+  <dialog id="claim-dialog" aria-labelledby="claim-title">
+    <form id="claim-form" novalidate>
+      <h2 id="claim-title">Ez az enyém!</h2>
+      <p class="muted" id="claim-text"></p>
+      <div class="field">
+        <label for="c-name">Neved és osztályod</label>
+        <input type="text" id="c-name" maxlength="60" placeholder="pl. Kiss Anna, 9.A" required aria-describedby="err-c-name">
+        <p class="error" id="err-c-name" role="alert"></p>
+      </div>
+      <div class="actions">
+        <button class="btn" type="button" id="claim-cancel">Mégse</button>
+        <button class="btn btn-primary" type="submit">Igénylem</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Megerősítés (törlés) -->
+  <dialog id="confirm-dialog" aria-labelledby="dlg-title">
+    <form method="dialog">
+      <h2 id="dlg-title"></h2>
+      <p id="dlg-text"></p>
+      <div class="actions">
+        <button class="btn" value="cancel">Mégse</button>
+        <button class="btn btn-danger" value="ok" id="dlg-ok">Rendben</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="talalt.js"></script>
+</body>
+</html>
