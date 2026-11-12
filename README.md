@@ -49,7 +49,7 @@ docs/                                           Sulipont-dokumentacio.docx (a do
 | Eszköz | Link |
 |---|---|
 | Projektmenedzsment (Trello) | https://trello.com/b/x6AtH50N/sulipont-iskolai-port%C3%A1l-tal%C3%A1lt-t%C3%A1rgyak-dolgozatnapt%C3%A1r-tank%C3%B6nyvb%C3%B6rze |
-| Tervek (Figma) | https://www.figma.com/design/hCLiY46XTIukD7jxpJfkar |
+| Tervek | Figma |
 | Verziókövetés | Git (`main`, `dev`, `feature/*`, `docs/*` ágak) |
 
 ## Dokumentáció
