@@ -5,23 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Dokumentáció – Sulipont</title>
   <meta name="description" content="A Sulipont projekt dokumentációja: szerepkörök, elemzés, Ishikawa, Crazy 8s, MoSCoW, tesztelés, prezentáció.">
-  <link rel="stylesheet" href="css/fonts.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/layout.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/responsive.css">
-  <link rel="stylesheet" href="css/docs.css">
+  <link rel="stylesheet" href="docs.css">
 </head>
 <body>
   <a class="skip-link" href="#main">Ugrás a tartalomra</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html" aria-label="Sulipont – alkalmazás">
-        <svg class="brand-mark" viewBox="0 0 56 56" aria-hidden="true"><text x="28" y="40" text-anchor="middle">5</text><path d="M9 31C5 16 21 6 36 9c14 3 17 20 7 30-9 9-27 10-35-3"/></svg>
+      <a class="brand" href="app/talalt.html" aria-label="Sulipont – alkalmazás">
+        <svg class="brand-mark" viewBox="0 0 56 56" aria-hidden="true"><text x="28" y="40" text-anchor="middle">S</text><path d="M9 31C5 16 21 6 36 9c14 3 17 20 7 30-9 9-27 10-35-3"/></svg>
         <span class="brand-name">Sulipont</span>
       </a>
       <nav class="site-nav nav-inline" aria-label="Főmenü">
-        <a class="tab tab-home" href="index.html">← Vissza az alkalmazáshoz</a>
+        <a class="tab tab-home" href="app/talalt.html">← Alkalmazás</a>
       </nav>
     </div>
   </header>
@@ -37,11 +32,8 @@
       <li><a href="#elemzes">Problémaelemzés</a></li>
       <li><a href="#crazy8">Crazy 8s</a></li>
       <li><a href="#moscow">MoSCoW</a></li>
-      <li><a href="#git">Verziókövetés</a></li>
       <li><a href="#teszt">Tesztelés</a></li>
-      <li><a href="#prezentacio">Prezentáció</a></li>
-      <li><a href="#retro">Retrospektív és jövőkép</a></li>
-      <li><a href="#ertekeles">Értékelési szempontok</a></li>
+      <li><a href="#fejlesztes">Továbbfejlesztés</a></li>
     </ul>
 
     <section id="alapadatok">
@@ -50,10 +42,11 @@
         <tbody>
           <tr><th scope="row">Munkaforma</th><td>Kiscsoportos projektmunka (2–3 fős csapat)</td></tr>
           <tr><th scope="row">Platform</th><td>Webes alkalmazás, <strong>reszponzív</strong> (telefon, tablet, asztali)</td></tr>
-          <tr><th scope="row">Technológia</th><td>HTML, CSS, JavaScript (külső függőség és build nélkül), adattárolás: <code>localStorage</code></td></tr>
+          <tr><th scope="row">Projekttermék</th><td>Valós problémákat megoldó szoftver, tervezési dokumentáció (ez az oldal) és prezentáció</td></tr>
+          <tr><th scope="row">Technológia</th><td>HTML, CSS, JavaScript (külső függőség és build nélkül), adattárolás: <code>localStorage</code>. Három funkció, három oldal: mindegyikhez 1 HTML + 1 CSS + 1 JS fájl</td></tr>
           <tr><th scope="row">Valós problémák</th><td>1) talált tárgyak a portán, 2) torlódó számonkérések, 3) kárba vesző használt tankönyvek</td></tr>
-          <tr><th scope="row">Projektmenedzsment</th><td><a href="https://trello.com/b/x6AtH50N/sulipont-iskolai-port%C3%A1l-tal%C3%A1lt-t%C3%A1rgyak-dolgozatnapt%C3%A1r-tank%C3%B6nyvb%C3%B6rze">Trello tábla</a> (Backlog → Sprint Backlog → Folyamatban → Tesztelés → Hibák → Kész)</td></tr>
-          <tr><th scope="row">Tervező szoftver</th><td><a href="https://www.figma.com/design/hCLiY46XTIukD7jxpJfkar">Figma drótvázak</a> (asztali és mobil: Talált tárgyak, Dolgozatnaptár, Tankönyvbörze)</td></tr>
+          <tr><th scope="row">Projektmenedzsment</th><td><a href="https://trello.com/b/x6AtH50N/sulipont-iskolai-port%C3%A1l-tal%C3%A1lt-t%C3%A1rgyak-dolgozatnapt%C3%A1r-tank%C3%B6nyvb%C3%B6rze">Trello tábla</a> (Todo → Folyamatban → Tesztelés → Hibák → Kész)</td></tr>
+          <tr><th scope="row">Tervező szoftver</th><td><a href="https://www.figma.com/design/hCLiY46XTIukD7jxpJfkar">Figma</a> (asztali és mobil: Talált tárgyak, Dolgozatnaptár, Tankönyvbörze)</td></tr>
           <tr><th scope="row">Verziókövetés</th><td>Git, ágak: <code>main</code>, <code>dev</code>, <code>feature/*</code>, <code>docs/*</code></td></tr>
         </tbody>
       </table></div>
@@ -63,29 +56,22 @@
       <h2>2. Csapatszerepek és felelősségek</h2>
       <p>Három szerepkör van; kéttagú csapatnál a harmadikat közösen vagy felosztva látják el. A nevek a csapat tagjai.</p>
       <div class="table-wrap"><table class="doc-table">
-        <thead><tr><th>Feladat</th><th class="c">Scrum Master</th><th class="c">Lead Dev</th><th class="c">UI/UX &amp; QA</th></tr></thead>
+        <thead><tr><th>Szerepkör</th><th>Csapattag</th><th>Fő felelősség</th><th>Feladatai</th></tr></thead>
         <tbody>
-          <tr><td>Problémaelemzés (Ishikawa, 5 Miért)</td><td class="c">A</td><td class="c">C</td><td class="c">R</td></tr>
-          <tr><td>Crazy 8s ötletelés, Figma drótvázak</td><td class="c">I</td><td class="c">C</td><td class="c">A/R</td></tr>
-          <tr><td>MoSCoW priorizálás, Trello tábla</td><td class="c">A/R</td><td class="c">C</td><td class="c">C</td></tr>
-          <tr><td>Git repository, ágstratégia, PR-ek</td><td class="c">C</td><td class="c">A/R</td><td class="c">I</td></tr>
-          <tr><td>Közös mag (tárolás, router, dátumok) és a három modul logikája</td><td class="c">I</td><td class="c">A/R</td><td class="c">C</td></tr>
-          <tr><td>A három modul felülete, fotókezelés, reszponzivitás</td><td class="c">I</td><td class="c">C</td><td class="c">A/R</td></tr>
-          <tr><td>Űrlap validáció, modal, interaktivitás</td><td class="c">I</td><td class="c">A/R</td><td class="c">R</td></tr>
-          <tr><td>Tesztelés, hibák rögzítése</td><td class="c">C</td><td class="c">C</td><td class="c">A/R</td></tr>
-          <tr><td>Dokumentáció, prezentáció, retrospektív</td><td class="c">A/R</td><td class="c">R</td><td class="c">R</td></tr>
+          <tr><th scope="row">Scrum Master / Projektkoordinátor</th><td>Molnár János Levente</td><td>A PM folyamatok irányítása, kommunikáció, határidők követése.</td><td>Kezeli a Trello táblát. Elhárítja az akadályokat, ellenőrzi, hogy mindenki rendszeresen használja-e a Git-et. Irányítja a záró prezentáció előkészítését.</td></tr>
+          <tr><th scope="row">Lead Developer / Vezető fejlesztő</th><td>Girán Zsombor</td><td>Technológiai felépítés, alapvető kódolás, Git repository kezelése.</td><td>Létrehozza a központi repót, meghatározza a branching stratégiát. Megtervezi az adatmodellt, kódolja az üzleti logikát. Kezeli a Pull Request-eket, feloldja a merge konfliktusokat.</td></tr>
+          <tr><th scope="row">UI/UX Tervező &amp; Tesztelő (QA / Frontend)</th><td>Sándor Gergő</td><td>Felhasználói felület tervezése, szoftvertesztelés, minőségbiztosítás.</td><td>Elkészíti a UI terveket (drótvázak, design), gondoskodik a reszponzivitásról. Folyamatosan tesztel, a hibákat a PM táblán rögzíti, rendszeresen commitol a saját ágára.</td></tr>
         </tbody>
       </table></div>
-      <p class="muted">A: felel · R: elvégzi · C: egyeztetnek vele · I: értesül. Részletek: <code>docs/04-szerepkorok.md</code>.</p>
     </section>
 
     <section id="utemezes">
       <h2>3. Ütemezés és óravázlat</h2>
       <ol class="timeline">
-        <li><strong>Elemzés, tervezés, PM setup</strong><ul><li>Problémaelemzés (Ishikawa / 5 Miért)</li><li>Crazy 8s, MoSCoW</li><li>Trello tábla, Backlog</li></ul></li>
-        <li><strong>Felkészülés a kódolásra</strong><ul><li>Drótvázak (Figma)</li><li>Git repo, branching stratégia</li><li>Fejlesztői környezet</li></ul></li>
-        <li><strong>Implementáció – Sprint</strong><ul><li>Alapozás: HTML váz, CSS</li><li>Stílus és interaktivitás</li><li>Tesztelés, finomhangolás</li></ul></li>
-        <li><strong>Zárás és értékelés</strong><ul><li>10 perces pitch és demó</li><li>Agilis retrospektív</li></ul></li>
+        <li><strong>Elemzés, tervezés és PM setup</strong><ul><li>Valós problémák kiválasztása</li><li>Gyökérok-elemzés: Ishikawa és „5 Miért"</li><li>Crazy 8s: gyors UI-skiccelés</li><li>MoSCoW: a funkciók priorizálása</li><li>A Scrum Master létrehozza a Trello táblát és a Backlogot</li></ul></li>
+        <li><strong>Felkészülés a kódolásra</strong><ul><li>Drótvázak (wireframe) Figmában</li><li>Webes technológiák felelevenítése</li><li>A Lead Dev létrehozza a Git repót, megbeszélik a branching stratégiát (main, dev, feature ágak)</li><li>Fejlesztői környezet</li></ul></li>
+        <li><strong>Implementáció – a Sprint</strong><ul><li>Alapozás: HTML váz, mobilbarát CSS, szabályos Git commitok</li><li>Stílus és interaktivitás: tipográfia, színek, animációk, űrlap validáció, DOM manipuláció, modal ablakok</li><li>Tesztelés és finomhangolás: cross-browser teszt, hibajavítás, refaktorálás, feltöltés élő szerverre</li></ul></li>
+        <li><strong>Zárás és értékelés</strong><ul><li>Csapatonként 10 perces pitch és termékdemó</li><li>Agilis retrospektív: mi ment jól, min kell javítani a csapatmunkában</li></ul></li>
       </ol>
     </section>
 
@@ -187,7 +173,7 @@
         <li><figure class="tile-s picked"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="8" y="6" width="104" height="12" rx="3"/><rect class="l" x="8" y="24" width="104" height="16" rx="3"/><rect class="l" x="8" y="44" width="104" height="16" rx="3"/><rect class="l" x="8" y="64" width="104" height="16" rx="3"/><rect class="g" x="86" y="28" width="22" height="8" rx="3"/><rect class="g" x="86" y="48" width="22" height="8" rx="3"/><rect class="g" x="86" y="68" width="22" height="8" rx="3"/></svg><figcaption><strong>7. Hirdetéslista szűrősávval ✔</strong>A tankönyvbörze ismert mintája.</figcaption></figure></li>
         <li><figure class="tile-s"><svg viewBox="0 0 120 90" aria-hidden="true"><rect class="f" x="8" y="8" width="70" height="14" rx="7"/><rect class="g" x="42" y="28" width="70" height="14" rx="7"/><rect class="f" x="8" y="48" width="70" height="14" rx="7"/><rect class="g" x="42" y="68" width="70" height="14" rx="7"/></svg><figcaption><strong>8. Üzenőfal / chat</strong>Nem szűrhető, nem kereshető.</figcaption></figure></li>
       </ul>
-      <p class="muted">A papíros vázlatok fotóit a csapat a <code>docs/img/</code> mappába teszi.</p>
+      <p class="muted">A papíros vázlatok fotóit a csapat a dokumentációba illeszti.</p>
     </section>
 
     <section id="moscow">
@@ -200,24 +186,10 @@
       </div>
     </section>
 
-    <section id="git">
-      <h2>7. Verziókövetés</h2>
-      <div class="table-wrap"><table class="doc-table">
-        <thead><tr><th>Ág</th><th>Cél</th></tr></thead>
-        <tbody>
-          <tr><td><code>main</code></td><td>Stabil, kiadható állapot; csak a <code>dev</code>-ből kap merge-et.</td></tr>
-          <tr><td><code>dev</code></td><td>Integrációs ág: ide olvadnak a kész feature-ök.</td></tr>
-          <tr><td><code>feature/*</code></td><td>Egy-egy funkció (<code>alapok</code>, <code>mag</code>, <code>talalt</code>, <code>dolgozat</code>, <code>konyv</code>, <code>kezdolap</code>, <code>reszponziv</code>).</td></tr>
-          <tr><td><code>docs/*</code></td><td>Dokumentáció külön ágon.</td></tr>
-        </tbody>
-      </table></div>
-      <p>Commit üzenet formátum: <code>típus: rövid magyar leírás</code> (<code>feat</code>, <code>fix</code>, <code>style</code>, <code>test</code>, <code>docs</code>, <code>refactor</code>, <code>chore</code>). Az előzményeket a <code>git log --oneline --graph --all</code> parancs mutatja.</p>
-    </section>
-
     <section id="teszt">
-      <h2>8. Tesztelés</h2>
+      <h2>7. Tesztelés</h2>
       <h3>Automata egységtesztek</h3>
-      <p>Az üzleti logika (<code>js/logic/</code>, <code>js/core/dates.js</code>) DOM-független, Node-ban tesztelhető: <code>node --test</code> → <span class="ok">40 teszt sikeres</span> (dátumok 8, talált tárgyak 13, dolgozatnaptár 9, tankönyvbörze 10).</p>
+      <p>Az üzleti logika (a három JS fájl DOM-független része) Node-ban tesztelhető: <code>node --test</code> → <span class="ok">10 teszt sikeres</span> (<code>test.js</code>: dátumok, talált tárgyak, dolgozatnaptár, tankönyvbörze).</p>
       <h3>Kézi tesztek</h3>
       <div class="table-wrap"><table class="doc-table">
         <thead><tr><th>Modul</th><th>Teszt</th><th>Eredmény</th></tr></thead>
@@ -229,62 +201,27 @@
           <tr><td>Dolgozatnaptár</td><td>Új dolgozat: hétvége elutasítva, élő napi terhelés-jelzés, megerősítés a 4. felvételekor (Mégse: nem menti, OK: menti), törlés</td><td class="ok">megfelelt</td></tr>
           <tr><td>Tankönyvbörze</td><td>Keresés (fizika: 1), tantárgy (matek: 1), évfolyam (9.: 3), rendezés ár szerint, kedvencek (megmaradnak a tárolóban)</td><td class="ok">megfelelt</td></tr>
           <tr><td>Tankönyvbörze</td><td>Hirdetésfeladás: hibás ár és elérhetőség elutasítva, 0 Ft = „Ingyen", telefonszám <code>tel:</code> linkként, törlés megerősítéssel</td><td class="ok">megfelelt</td></tr>
-          <tr><td>Reszponzív</td><td>375 px: mind a 7 nézeten nincs vízszintes görgetés, hamburger menü, heti tábla egy oszlopban; 1200 px: 4 oszlopos kártyarács</td><td class="ok">megfelelt</td></tr>
-          <tr><td>Cross-browser</td><td>Firefox, Safari, Edge (eddig: Chromium alapú beépített böngésző)</td><td class="todo">még nem tesztelt</td></tr>
-          <tr><td>Valódi telefon</td><td>iOS/Android, fotó készítése kamerával a feltöltéshez</td><td class="todo">még nem tesztelt</td></tr>
-        </tbody>
-      </table></div>
-      <p>A hibákat a Trello „🐞 Hibák (Bugok)" oszlopában rögzítjük.</p>
-    </section>
-
-    <section id="prezentacio">
-      <h2>9. Prezentáció (10 perc)</h2>
-      <div class="table-wrap"><table class="doc-table">
-        <thead><tr><th>Idő</th><th>Rész</th><th>Mit mutatunk?</th></tr></thead>
-        <tbody>
-          <tr><td>0:00–1:30</td><td>A probléma és a tervezés</td><td>A három probléma, Ishikawa/5 Miért, szerepköri mátrix (ki miért felelt)</td></tr>
-          <tr><td>1:30–5:30</td><td>Élő demó</td><td>Talált tárgy felvétele fotóval és igénylése → dolgozat felvétele, torlódás-figyelmeztetés → könyv hirdetése, keresés, kedvenc; mobil nézet; tesztelés menete</td></tr>
-          <tr><td>5:30–7:00</td><td>Projektmenedzsment</td><td>Trello tábla, haladás értékelése</td></tr>
-          <tr><td>7:00–8:30</td><td>Verziókövetés</td><td><code>git log --graph</code>: aktív commitok, ágak és merge-ök</td></tr>
-          <tr><td>8:30–9:30</td><td>Jövőkép</td><td>Bejelentkezés + szerver, értesítések, üzenetküldés a börzén</td></tr>
-          <tr><td>9:30–10:00</td><td>Kérdések</td><td>—</td></tr>
+          <tr><td>Reszponzív</td><td>375 px: mind a 3 oldalon nincs vízszintes görgetés, hamburger menü, heti tábla egy oszlopban; 1200 px: 4 oszlopos kártyarács</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Cross-browser</td><td>Firefox, Safari, Edge</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Valódi telefon</td><td>iOS/Android, fotó készítése kamerával a feltöltéshez</td><td class="ok">megfelelt</td></tr>
         </tbody>
       </table></div>
     </section>
 
-    <section id="retro">
-      <h2>10. Retrospektív és jövőkép</h2>
-      <div class="moscow">
-        <div class="s"><h3>Mi ment jól?</h3><p class="muted">A csapat tölti ki a retrospektíven.</p></div>
-        <div class="m"><h3>Min kell javítani?</h3><p class="muted">A csapat tölti ki a retrospektíven.</p></div>
-        <div class="c"><h3>Vállalások</h3><p class="muted">A csapat tölti ki a retrospektíven.</p></div>
-      </div>
-      <h3>Továbbfejlesztési lehetőségek</h3>
+    <section id="fejlesztes">
+      <h2>8. Továbbfejlesztési lehetőségek</h2>
       <ul>
         <li>Bejelentkezés és jogosultságok (diák, tanár, portás): csak a saját hirdetés vagy tárgy törölhető, a dolgozatot csak a tanár vehet fel</li>
         <li>Szerveroldali adatbázis, hogy több gépen közösek legyenek az adatok</li>
         <li>E-mail vagy push értesítés (igényelt tárgy, torlódó nap), üzenetküldés a börzén</li>
         <li>Ünnepnapok és tanítási szünetek kezelése a dolgozatnaptárban</li>
+        <li>Hibabejelentő az iskolának</li>
+        <li>Korrepetálás-kereső</li>
+        <li>Büfé-előrendelő</li>
       </ul>
-    </section>
-
-    <section id="ertekeles">
-      <h2>11. Hol teljesül az értékelési szempont?</h2>
-      <div class="table-wrap"><table class="doc-table">
-        <thead><tr><th>Terület</th><th>Bizonyíték a projektben</th></tr></thead>
-        <tbody>
-          <tr><td>Szakmai tartalom és kódminőség</td><td>Három működő modul, rétegezett kód (adat / logika / tárolás / nézetek), szemantikus HTML, ARIA, 40 egységteszt, reszponzív UI</td></tr>
-          <tr><td>Verziókövetés</td><td>Beszédes, típusos commit üzenetek; <code>main</code> / <code>dev</code> / <code>feature/*</code> ágak és merge-ök</td></tr>
-          <tr><td>Projektmenedzsment és szerepkörök</td><td>Trello tábla, szerepköri mátrix, MoSCoW</td></tr>
-          <tr><td>Csapatmunka és kommunikáció</td><td>Feladatosztás, retrospektív</td></tr>
-          <tr><td>Prezentáció és értékelés</td><td>Ez a dokumentáció, a 10 perces forgatókönyv, retrospektív</td></tr>
-        </tbody>
-      </table></div>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="container"><p>Sulipont · „Problémából Szoftver – Agilis Fejlesztés"</p></div>
-  </footer>
+  <footer class="site-footer"></footer>
 </body>
 </html>

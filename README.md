@@ -12,11 +12,11 @@ Három valós iskolai probléma, egy közös felületen:
 
 ## Arculat
 
-Az oldal az iskolai tárgyakból épül fel: parafatábla és polaroidok a talált tárgyaknak, spirálos tervező a dolgozatoknak, iskolatábla és könyvborítók a börzének. Saját rajzolt ikonok (nincs emoji), saját színek, négy betűtípus. Részletek: [docs/09-arculat.md](docs/09-arculat.md). A betűk nyílt licencűek (OFL) és a `fonts/` mappában vannak, így internet nélkül is működik minden.
+Az oldal az iskolai tárgyakból épül fel: parafatábla és polaroidok a talált tárgyaknak, spirálos tervező a dolgozatoknak, iskolatábla és könyvborítók a börzének. Saját rajzolt ikonok (nincs emoji), saját színek, négy betűtípus. A betűk nyílt licencűek (OFL) és a `fonts/` mappában vannak, így internet nélkül is működik minden.
 
 ## Futtatás
 
-Nincs build lépés. Elég megnyitni az `index.html` fájlt böngészőben, vagy helyi szerverrel:
+Nincs build lépés. Elég megnyitni az `app/talalt.html` fájlt böngészőben (a három oldal egymásra mutat), vagy helyi szerverrel:
 
 ```bash
 npx serve .
@@ -32,15 +32,16 @@ node --test
 
 ## Mappaszerkezet
 
+Három funkció, három oldal. Mindegyikhez egy HTML, egy CSS és egy JS fájl tartozik, a fájlok önállóak.
+
 ```
-index.html      az alkalmazás
-docs.html       a projektdokumentáció böngészőben olvasható változata
-css/            stíluslapok (alap, elrendezés, komponensek, modulok, reszponzív)
-js/core/        dátum segédek, tárolás, UI segédek, router
-js/logic/       a modulok üzleti logikája (DOM nélkül, tesztelhető)
-js/views/       a nézetek (kezdőlap, talált tárgyak, dolgozatnaptár, tankönyvbörze)
-tests/          egységtesztek a logikához
-docs/           Markdown dokumentáció (elemzés, MoSCoW, szerepkörök, ...)
+app/talalt.html    talalt.css    talalt.js      Talált tárgyak
+app/dolgozat.html  dolgozat.css  dolgozat.js    Dolgozatnaptár
+app/konyv.html     konyv.css     konyv.js       Tankönyvbörze
+docs.html  docs.css                             a projektdokumentáció böngészőben olvasható változata
+test.js                                         egységtesztek (a három JS fájl logikai részéhez)
+fonts/                                          betűtípusok (OFL), így internet nélkül is működik
+docs/                                           Sulipont-dokumentacio.docx (a docs.html tartalma Wordben)
 ```
 
 ## Eszközök
@@ -53,4 +54,4 @@ docs/           Markdown dokumentáció (elemzés, MoSCoW, szerepkörök, ...)
 
 ## Dokumentáció
 
-Lásd a [docs/](docs/) mappát és a `docs.html` oldalt.
+Lásd a `docs.html` oldalt és a `docs/Sulipont-dokumentacio.docx` fájlt.
