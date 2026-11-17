@@ -1,11 +1,16 @@
 -- Sulipont adatbázis (Supabase / Postgres). Üres projektben a Supabase SQL Editorban egyben futtatható.
 -- Szabályok: minden adat iskolához tartozik, és csak az iskola bejelentkezett tagjai látják.
 -- Felvenni a saját iskolába lehet, törölni csak a saját sort. Vendég (belépés nélkül) csak az iskolák listáját látja.
--- Új iskola felvétele:  insert into schools (name) values ('Példa Gimnázium');
+-- Új iskola felvétele (az azonosítót az adatbázis generálja; az osztályok megadása nem kötelező, az alapérték 9.A–12.B):
+--   insert into schools (name) values ('Példa Gimnázium');
+--   insert into schools (name, classes) values ('Példa Gimnázium', array['7.a', '7.b', '8.a', '8.b']);
+-- Osztályok módosítása:  update schools set classes = array['9.A', '9.B', '9.C'] where name = 'Példa Gimnázium';
 
 create table schools (
   id uuid primary key default gen_random_uuid(),
-  name text not null unique
+  name text not null unique,
+  classes text[] not null                                                       -- az iskola osztályai (a regisztráció és a dolgozatnaptár használja)
+    default array['9.A', '9.B', '10.A', '10.B', '11.A', '11.B', '12.A', '12.B'] check (cardinality(classes) > 0)
 );
 
 -- Felhasználói profil: melyik iskolába jár. A regisztrációkor a trigger tölti ki (lásd lent).
