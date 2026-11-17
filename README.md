@@ -24,11 +24,15 @@ npx serve .
 
 Az adatok a Supabase-ben vannak (táblák, jogosultsági szabályok és demó adatok: `supabase/schema.sql`). Minden adat **iskolához** tartozik: regisztrációkor a felhasználó kiválasztja az iskoláját és az osztályát (e-mail + jelszó), és belépve csak a saját iskolája tárgyait, dolgozatait és hirdetéseit látja. Belépés nélkül csak a belépés felület látszik. Új sort a saját iskolába lehet felvenni, törölni csak a sajátot.
 
-Új iskola felvétele (Supabase SQL Editor):
+Új iskola felvétele (Supabase SQL Editor). Az azonosítót az adatbázis generálja, az osztályok megadása nem kötelező (alapérték: 9.A–12.B):
 
 ```sql
 insert into schools (name) values ('Példa Gimnázium');
+insert into schools (name, classes) values ('Másik Iskola', array['7.a', '7.b', '8.a', '8.b']);
+update schools set classes = array['9.A', '9.B', '9.C'] where name = 'Példa Gimnázium';
 ```
+
+Az osztályok iskolánként a `schools.classes` oszlopban vannak, ezeket kínálja a regisztráció és a dolgozatnaptár.
 
 A sémában egy „Minta Gimnázium" demó adatokkal van. A regisztrációnál az iskolát ellenőrzés nélkül lehet választani, így bárki csatlakozhat bármelyik iskolához (meghívókód később jöhet).
 
