@@ -43,7 +43,7 @@
           <tr><th scope="row">Munkaforma</th><td>Kiscsoportos projektmunka (2–3 fős csapat)</td></tr>
           <tr><th scope="row">Platform</th><td>Webes alkalmazás, <strong>reszponzív</strong> (telefon, tablet, asztali)</td></tr>
           <tr><th scope="row">Projekttermék</th><td>Valós problémákat megoldó szoftver, tervezési dokumentáció (ez az oldal) és prezentáció</td></tr>
-          <tr><th scope="row">Technológia</th><td>HTML, CSS, JavaScript (külső függőség és build nélkül), adattárolás: <code>localStorage</code>. Három funkció, három oldal: mindegyikhez 1 HTML + 1 CSS + 1 JS fájl</td></tr>
+          <tr><th scope="row">Technológia</th><td>HTML, CSS, JavaScript (külső függőség és build nélkül), adatbázis és fiókok: <strong>Supabase</strong> (Postgres + e-mail/jelszó belépés), üzemeltetés: <strong>Vercel</strong>. Három funkció, három oldal: mindegyikhez 1 HTML + 1 CSS + 1 JS fájl</td></tr>
           <tr><th scope="row">Valós problémák</th><td>1) talált tárgyak a portán, 2) torlódó számonkérések, 3) kárba vesző használt tankönyvek</td></tr>
           <tr><th scope="row">Projektmenedzsment</th><td><a href="https://trello.com/b/x6AtH50N/sulipont-iskolai-port%C3%A1l-tal%C3%A1lt-t%C3%A1rgyak-dolgozatnapt%C3%A1r-tank%C3%B6nyvb%C3%B6rze">Trello tábla</a> (Todo → Folyamatban → Tesztelés → Hibák → Kész)</td></tr>
           <tr><th scope="row">Tervező szoftver</th><td><a href="https://www.figma.com/design/hCLiY46XTIukD7jxpJfkar">Figma</a> (asztali és mobil: Talált tárgyak, Dolgozatnaptár, Tankönyvbörze)</td></tr>
@@ -180,9 +180,9 @@
       <h2>6. Priorizálás – MoSCoW</h2>
       <div class="moscow">
         <div class="m"><h3>Must have</h3><ul><li>Talált tárgyak: fotós lista, szűrés kategóriára és dátumra, „Ez az enyém!", új tárgy űrlap</li><li>Dolgozatnaptár: heti nézet, új dolgozat, figyelmeztetés napi 3 fölött</li><li>Tankönyvbörze: hirdetésfeladás, keresés tantárgyra és évfolyamra, kedvencek</li><li>Adatmegőrzés, validáció, reszponzivitás</li></ul></div>
-        <div class="s"><h3>Should have</h3><ul><li>Fotófeltöltés kicsinyítéssel</li><li>Osztályszűrő, hétváltás</li><li>Szöveges keresés, rendezés</li><li>Törlés megerősítéssel</li><li>Kezdőlapi számok, toast</li></ul></div>
+        <div class="s"><h3>Should have</h3><ul><li>Fotófeltöltés kicsinyítéssel</li><li>Osztályszűrő, hétváltás</li><li>Szöveges keresés, rendezés</li><li>Törlés megerősítéssel</li><li>Fiókok (belépés) és közös adatbázis (Supabase)</li><li>Toast értesítések</li></ul></div>
         <div class="c"><h3>Could have</h3><ul><li>Igénylés visszavonása</li><li>Demó adatok</li><li>Billentyűzetes kezelés</li></ul></div>
-        <div class="w"><h3>Won't have</h3><ul><li>Bejelentkezés</li><li>Szerveroldali adatbázis</li><li>E-mail értesítés</li><li>Üzenetküldés</li><li>Sötét téma, export</li></ul></div>
+        <div class="w"><h3>Won't have</h3><ul><li>E-mail értesítés</li><li>Üzenetküldés</li><li>Sötét téma, export</li></ul></div>
       </div>
     </section>
 
@@ -202,6 +202,7 @@
           <tr><td>Tankönyvbörze</td><td>Keresés (fizika: 1), tantárgy (matek: 1), évfolyam (9.: 3), rendezés ár szerint, kedvencek (megmaradnak a tárolóban)</td><td class="ok">megfelelt</td></tr>
           <tr><td>Tankönyvbörze</td><td>Hirdetésfeladás: hibás ár és elérhetőség elutasítva, 0 Ft = „Ingyen", telefonszám <code>tel:</code> linkként, törlés megerősítéssel</td><td class="ok">megfelelt</td></tr>
           <tr><td>Reszponzív</td><td>375 px: mind a 3 oldalon nincs vízszintes görgetés, hamburger menü, heti tábla egy oszlopban; 1200 px: 4 oszlopos kártyarács</td><td class="ok">megfelelt</td></tr>
+          <tr><td>Fiók és adatbázis</td><td>Jogosultságok (<code>supabase/rls-teszt.sql</code>): a vendég csak olvas; bejelentkezve csak a saját sor vehető fel és törölhető; más tárgya nem írható át, igényelni lehet</td><td class="ok">megfelelt</td></tr>
           <tr><td>Cross-browser</td><td>Firefox, Safari, Edge</td><td class="ok">megfelelt</td></tr>
           <tr><td>Valódi telefon</td><td>iOS/Android, fotó készítése kamerával a feltöltéshez</td><td class="ok">megfelelt</td></tr>
         </tbody>
@@ -211,8 +212,7 @@
     <section id="fejlesztes">
       <h2>8. Továbbfejlesztési lehetőségek</h2>
       <ul>
-        <li>Bejelentkezés és jogosultságok (diák, tanár, portás): csak a saját hirdetés vagy tárgy törölhető, a dolgozatot csak a tanár vehet fel</li>
-        <li>Szerveroldali adatbázis, hogy több gépen közösek legyenek az adatok</li>
+        <li>Szerepkörök (diák, tanár, portás): a dolgozatot csak a tanár vehet fel (a fiók és a „csak a saját sor törölhető" szabály már működik)</li>
         <li>E-mail vagy push értesítés (igényelt tárgy, torlódó nap), üzenetküldés a börzén</li>
         <li>Ünnepnapok és tanítási szünetek kezelése a dolgozatnaptárban</li>
         <li>Hibabejelentő az iskolának</li>
