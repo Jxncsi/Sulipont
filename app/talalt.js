@@ -1,7 +1,6 @@
 'use strict';
 
 /* ===== Adatok ===== */
-const KEY = 'sulipont.found';
 const CATEGORIES = { // kategória: [rajz neve, színfolt]
   'Ruházat': ['hoodie', 'var(--tomato)'],
   'Kulacs és étel': ['bottle', '#7aa2ff'],
@@ -128,26 +127,20 @@ function setupPage() {
 }
 
 /* ===== Megjelenítés ===== */
-let items; // a böngészőben mentett tárgyak (a start() tölti be)
-const save = () => localStorage.setItem(KEY, JSON.stringify(items));
+let items = []; // a Supabase-ből betöltött tárgyak (a start() tölti be)
 
-/** Demó adatok az első indításhoz, a mai naphoz igazítva. */
-function demoItems() {
-  const item = (name, category, place, daysAgo, description = '') => ({
-    id: crypto.randomUUID(), name, category, place, description, date: addDays(TODAY, -daysAgo), photo: null, status: 'talalt', claimedBy: null,
-  });
-  const claimed = { ...item('Kék termosz kulacs', 'Kulacs és étel', 'Ebédlő', 2), status: 'igenyelve', claimedBy: 'Nagy Bence, 10.B' };
-  return [
-    item('Szürke kapucnis pulcsi', 'Ruházat', 'Tornaterem, női öltöző', 1, 'Nike, M méret, a zsebében zsebkendő.'),
-    claimed,
-    item('Cicás tolltartó', 'Írószer', '204-es terem', 3, 'Benne 3 toll és egy radír.'),
-    item('Fekete sapka', 'Ruházat', 'Aula', 4),
-    item('Piros hátizsák', 'Táska', 'Büfé előtt', 5, 'Matekfüzet van benne.'),
-    item('Kulcscsomó (3 kulcs)', 'Kulcs és ékszer', 'Porta', 6, 'Kék kulcstartóval.'),
-    item('Fehér fülhallgató', 'Elektronika', 'Könyvtár', 7, 'Töltőtokban.'),
-    item('Focilabda', 'Sport', 'Udvar', 9),
-  ];
+/** Hibás Supabase-válasznál hibaüzenetet ír, és false-t ad. */
+function ok(error, text) {
+  if (error) toast(`${text} (${error.message})`, 'bad');
+  return !error;
 }
+
+/** Az igénylés visszavonását és a törlést csak az láthatja, akié a tárgy (vagy aki igényelte). */
+const mine = (item) => user && item.user_id === user.id;
+const myClaim = (item) => user && item.claimed_by_user === user.id;
+
+/** Újrarajzolás belépés/kilépés után (az auth.js hívja). */
+const onAuthChange = () => render();
 
 /** Polaroid: fotó, vagy a kategória rajza csíkos háttéren. Az „Igényelve" bélyeg ráütve. */
 function polaroid(item) {
@@ -166,7 +159,7 @@ function polaroid(item) {
 function card(item) {
   const claimed = item.status === 'igenyelve';
   const mainButton = claimed
-    ? el('button', { class: 'btn btn-small', type: 'button', text: 'Mégsem az enyém', onclick: () => { Object.assign(item, { status: 'talalt', claimedBy: null }); save(); render(); } })
+    ? (myClaim(item) || mine(item)) && el('button', { class: 'btn btn-small', type: 'button', text: 'Mégsem az enyém', onclick: () => setClaim(item, { status: 'talalt', claimed_by: null, claimed_by_user: null }) })
     : el('button', { class: 'btn btn-primary', type: 'button', text: 'Ez az enyém!', onclick: () => openClaim(item) });
   return el('article', { class: 'item' },
     polaroid(item),
@@ -174,9 +167,9 @@ function card(item) {
     el('ul', { class: 'chips' }, el('li', { class: 'chip', text: item.category })),
     el('p', { class: 'where' }, el('small', { text: 'Hol: ' }), item.place),
     item.description && el('p', { class: 'meta', text: item.description }),
-    claimed && el('p', { class: 'meta' }, 'Igényelte: ', el('strong', { text: item.claimedBy })),
+    claimed && el('p', { class: 'meta' }, 'Igényelte: ', el('strong', { text: item.claimed_by })),
     el('div', { class: 'card-actions' }, mainButton,
-      el('button', { class: 'btn btn-small btn-ghost', type: 'button', text: 'Törlés', onclick: () => remove(item) })));
+      mine(item) && el('button', { class: 'btn btn-small btn-ghost', type: 'button', text: 'Törlés', onclick: () => remove(item) })));
 }
 
 function render() {
@@ -187,16 +180,29 @@ function render() {
 
 async function remove(item) {
   if (!await confirmBox('Törlöd a tárgyat?', `${item.name} (${item.place}). A művelet nem vonható vissza.`, 'Törlés')) return;
+  const { error } = await sb.from('found_items').delete().eq('id', item.id);
+  if (!ok(error, 'Nem sikerült törölni.')) return;
   items = items.filter((x) => x !== item);
-  save(); render(); toast('A tárgy törölve.');
+  render(); toast('A tárgy törölve.');
 }
 
 /* „Ez az enyém!": név megadása után a tárgy „igényelt", a portán át lehet venni */
 let claimed; // az a tárgy, amit éppen igényelnek
+
+/** Igénylés vagy visszavonás: csak a státusz-mezők változnak. */
+async function setClaim(item, patch) {
+  const { error } = await sb.from('found_items').update(patch).eq('id', item.id);
+  if (!ok(error, 'Nem sikerült menteni.')) return false;
+  Object.assign(item, patch);
+  render();
+  return true;
+}
+
 function openClaim(item) {
+  if (!requireLogin()) return;
   claimed = item;
   $('#claim-text').textContent = `${item.name} – ${item.place}. Add meg, ki vagy, hogy a portán átvehesd.`;
-  $('#c-name').value = '';
+  $('#c-name').value = userName();
   showErrors('c', ['name'], {});
   $('#claim-dialog').showModal();
 }
@@ -247,23 +253,25 @@ function showForm(open) {
   $('#t-name').focus();
 }
 
-function onSubmit(e) {
+async function onSubmit(e) {
   e.preventDefault();
-  const item = {
-    id: crypto.randomUUID(), name: $('#t-name').value.trim(), category: $('#t-category').value, place: $('#t-place').value.trim(),
-    date: $('#t-date').value, description: $('#t-desc').value.trim(), photo, status: 'talalt', claimedBy: null,
+  if (!requireLogin()) return;
+  const row = {
+    name: $('#t-name').value.trim(), category: $('#t-category').value, place: $('#t-place').value.trim(),
+    date: $('#t-date').value, description: $('#t-desc').value.trim(), photo,
   };
-  if (showErrors('t', FIELDS, validate(item))) return;
-  items.unshift(item);
-  try { save(); } catch { items.shift(); toast('A böngésző tárolója megtelt, törölj régi tárgyakat.', 'bad'); return; }
+  if (showErrors('t', FIELDS, validate(row))) return;
+  const { data, error } = await sb.from('found_items').insert(row).select().single();
+  if (!ok(error, 'Nem sikerült felvenni.')) return;
+  items.unshift(data);
   showForm(false); render();
-  toast(`„${item.name}" felvéve.`);
+  toast(`„${data.name}" felvéve.`);
 }
 
-function start() {
+async function start() {
   setupPage();
-  items = JSON.parse(localStorage.getItem(KEY) || 'null');
-  if (!items) { items = demoItems(); save(); }
+  const { data, error } = await sb.from('found_items').select('*');
+  if (ok(error, 'Nem sikerült betölteni a tárgyakat.')) items = data;
 
   fill($('#f-cat'), Object.keys(CATEGORIES), 'Összes');
   fill($('#t-category'), Object.keys(CATEGORIES), 'Válassz…');
@@ -271,19 +279,18 @@ function start() {
 
   $('#found-filters').oninput = render;
   $('#found-filters').onsubmit = (e) => e.preventDefault(); // Enter ne töltse újra az oldalt
-  $('#new-btn').onclick = () => showForm(true);
+  $('#new-btn').onclick = () => requireLogin() && showForm(true);
   $('#t-cancel').onclick = () => showForm(false);
   $('#found-form').onsubmit = onSubmit;
   $('#t-photo').onchange = onPhotoChosen;
   $('#t-photo-clear').onclick = () => { $('#t-photo').value = ''; setPhoto(null); };
 
   $('#claim-cancel').onclick = () => $('#claim-dialog').close();
-  $('#claim-form').onsubmit = (e) => {
+  $('#claim-form').onsubmit = async (e) => {
     e.preventDefault();
     const name = $('#c-name').value.trim();
     if (showErrors('c', ['name'], tooShort(name, 3) ? { name: 'Add meg a neved és az osztályodat (legalább 3 karakter).' } : {})) return;
-    Object.assign(claimed, { status: 'igenyelve', claimedBy: name });
-    save(); render();
+    if (!await setClaim(claimed, { status: 'igenyelve', claimed_by: name, claimed_by_user: user.id })) return;
     $('#claim-dialog').close();
     toast(`Köszönjük, ${name}! A tárgyat a portán veheted át.`);
   };
@@ -291,4 +298,4 @@ function start() {
 }
 
 if (typeof document === 'undefined') module.exports = { validate, filter, agoLabel, isDate, addDays, daysBetween }; // a test.js-hez
-else start();
+else addEventListener('DOMContentLoaded', start); // az auth.js a lap végén töltődik be, a start() csak utána fut

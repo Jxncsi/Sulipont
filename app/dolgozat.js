@@ -2,7 +2,6 @@
 /* Dolgozat- és beadandónaptár: heti nézet osztályonként, új dolgozat, figyelmeztetés, ha egy napra háromnál több esik. */
 
 /* ===== Adatok ===== */
-const KEY = 'sulipont.exams';
 const SUBJECTS = ['Matematika', 'Magyar', 'Történelem', 'Angol', 'Német', 'Fizika', 'Kémia', 'Biológia', 'Földrajz', 'Informatika', 'Egyéb'];
 const CLASSES = ['9.A', '9.B', '10.A', '10.B', '11.A', '11.B', '12.A', '12.B'];
 const TYPES = ['Dolgozat', 'Témazáró', 'Beadandó', 'Felelet'];
@@ -119,29 +118,23 @@ function setupPage() {
 }
 
 /* ===== Megjelenítés ===== */
-let exams; // a böngészőben mentett számonkérések (a start() tölti be)
-const save = () => localStorage.setItem(KEY, JSON.stringify(exams));
+let exams = []; // a Supabase-ből betöltött számonkérések (a start() tölti be)
 const view = { monday: mondayOf(nextSchoolDay(TODAY)), className: '' }; // melyik hetet és osztályt mutatjuk (üres osztály = mind)
 
-/** Demó adatok. A 9.A osztálynak az első jövőbeli napra 4 számonkérés esik, hogy a figyelmeztetés látszódjon. */
-function demoExams() {
-  const days = weekDays(view.monday);
-  const crowded = days.find((d) => d >= TODAY) || days[4];
-  const exam = (className, date, subject, type, teacher, topic) => ({ id: crypto.randomUUID(), className, date, subject, type, teacher, topic });
-  return [
-    exam('9.A', days[0], 'Matematika', 'Dolgozat', 'Kiss Tamás', 'Függvények'),
-    exam('9.A', crowded, 'Fizika', 'Dolgozat', 'Szabó Péter', 'Newton törvényei'),
-    exam('9.A', crowded, 'Kémia', 'Témazáró', 'Varga Judit', 'Sav-bázis reakciók'),
-    exam('9.A', crowded, 'Magyar', 'Beadandó', 'Horváth Gábor', 'Olvasónapló'),
-    exam('9.A', crowded, 'Biológia', 'Dolgozat', 'Kovács Márta', 'Sejttan'),
-    exam('9.B', days[1], 'Történelem', 'Témazáró', 'Tóth Anna', 'Az ókori Róma'),
-    exam('9.B', days[2], 'Angol', 'Felelet', 'Nagy Erika', 'Unit 4 szókincs'),
-    exam('10.A', days[2], 'Matematika', 'Dolgozat', 'Kiss Tamás', 'Másodfokú egyenletek'),
-    exam('10.A', days[3], 'Informatika', 'Beadandó', 'Kiss Tamás', 'Weboldal'),
-    exam('11.B', days[3], 'Fizika', 'Dolgozat', 'Szabó Péter', 'Hullámtan'),
-    exam('12.A', days[4], 'Magyar', 'Dolgozat', 'Horváth Gábor', 'Érettségi gyakorlás'),
-  ];
+/** Az adatbázis class_name oszlopa a kódban className. */
+const fromRow = (r) => ({ ...r, className: r.class_name });
+
+/** Hibás Supabase-válasznál hibaüzenetet ír, és false-t ad. */
+function ok(error, text) {
+  if (error) toast(`${text} (${error.message})`, 'bad');
+  return !error;
 }
+
+/** Törölni csak a saját számonkérést lehet. */
+const mine = (exam) => user && exam.user_id === user.id;
+
+/** Újrarajzolás belépés/kilépés után (az auth.js hívja). */
+const onAuthChange = () => render();
 
 /** Egy számonkérés matricája. A színe a tantárgyé: a CSS-ben .sub-0 … .sub-10. */
 function examCard(exam) {
@@ -152,7 +145,7 @@ function examCard(exam) {
       !view.className && el('span', { class: 'chip', text: exam.className })),
     el('p', { class: 'exam-teacher', text: exam.teacher }),
     exam.topic && el('p', { class: 'exam-topic', text: exam.topic }),
-    el('button', { class: 'exam-del', type: 'button', text: '✕', title: 'Törlés', 'aria-label': `Törlés: ${exam.className} ${exam.subject}`, onclick: () => remove(exam) }));
+    mine(exam) && el('button', { class: 'exam-del', type: 'button', text: '✕', title: 'Törlés', 'aria-label': `Törlés: ${exam.className} ${exam.subject}`, onclick: () => remove(exam) }));
 }
 
 function dayColumn({ date, items, over }) {
@@ -180,8 +173,10 @@ function render() {
 
 async function remove(exam) {
   if (!await confirmBox('Törlöd a számonkérést?', `${exam.className} – ${exam.subject} (${exam.type}), ${longDate(exam.date)}.`, 'Törlés')) return;
+  const { error } = await sb.from('exams').delete().eq('id', exam.id);
+  if (!ok(error, 'Nem sikerült törölni.')) return;
   exams = exams.filter((x) => x !== exam);
-  save(); render(); toast('A számonkérés törölve.');
+  render(); toast('A számonkérés törölve.');
 }
 
 /* Új dolgozat: élő jelzés a napi terhelésről, megerősítés, ha már 3 van */
@@ -209,8 +204,9 @@ function showForm(open) {
 
 async function onSubmit(e) {
   e.preventDefault();
+  if (!requireLogin()) return;
   const exam = {
-    id: crypto.randomUUID(), className: $('#d-class').value, date: $('#d-date').value, subject: $('#d-subject').value,
+    className: $('#d-class').value, date: $('#d-date').value, subject: $('#d-subject').value,
     type: $('#d-type').value, teacher: $('#d-teacher').value.trim(), topic: $('#d-topic').value.trim(),
   };
   if (showErrors('d', FIELDS, validate(exam))) return;
@@ -220,17 +216,20 @@ async function onSubmit(e) {
       `A(z) ${exam.className} osztálynak ${longDate(exam.date)} már ${count} számonkérése van. Biztosan felveszed a(z) ${count + 1}.-et is?`, 'Mégis felveszem', false);
     if (!yes) return;
   }
-  exams.unshift(exam);
-  try { save(); } catch { exams.shift(); toast('A böngésző tárolója megtelt.', 'bad'); return; }
+  const { data, error } = await sb.from('exams')
+    .insert({ class_name: exam.className, date: exam.date, subject: exam.subject, type: exam.type, teacher: exam.teacher, topic: exam.topic })
+    .select().single();
+  if (!ok(error, 'Nem sikerült felvenni.')) return;
+  exams.unshift(fromRow(data));
   Object.assign(view, { monday: mondayOf(exam.date), className: exam.className }); // a felvett dolgozat hetére ugrunk
   showForm(false); render();
   toast(`Felvéve: ${exam.className} – ${exam.subject} (${exam.type}), ${longDate(exam.date)}.`);
 }
 
-function start() {
+async function start() {
   setupPage();
-  exams = JSON.parse(localStorage.getItem(KEY) || 'null');
-  if (!exams) { exams = demoExams(); save(); }
+  const { data, error } = await sb.from('exams').select('*');
+  if (ok(error, 'Nem sikerült betölteni a számonkéréseket.')) exams = data.map(fromRow);
 
   fill($('#w-class'), CLASSES, 'Összes osztály');
   fill($('#d-class'), CLASSES, 'Válassz…');
@@ -243,7 +242,7 @@ function start() {
   $('#week-next').onclick = () => { view.monday = addDays(view.monday, 7); render(); };
   $('#week-today').onclick = () => { view.monday = mondayOf(nextSchoolDay(TODAY)); render(); };
 
-  $('#new-btn').onclick = () => showForm(true);
+  $('#new-btn').onclick = () => requireLogin() && showForm(true);
   $('#d-cancel').onclick = () => showForm(false);
   $('#exam-form').onsubmit = onSubmit;
   $('#d-class').onchange = $('#d-date').onchange = updateHint;
@@ -251,4 +250,4 @@ function start() {
 }
 
 if (typeof document === 'undefined') module.exports = { validate, countOnDay, wouldOverload, week, isDate, addDays, mondayOf, weekDays, nextSchoolDay, MAX }; // a test.js-hez
-else start();
+else addEventListener('DOMContentLoaded', start); // az auth.js a lap végén töltődik be, a start() csak utána fut

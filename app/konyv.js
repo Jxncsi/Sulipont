@@ -2,7 +2,6 @@
 /* Tankönyv- és jegyzetbörze: hirdetésfeladás, keresés tantárgyra és évfolyamra, kedvencek. */
 
 /* ===== Adatok ===== */
-const KEY = 'sulipont.books', FAV_KEY = 'sulipont.favorites';
 const SUBJECTS = ['Matematika', 'Magyar', 'Történelem', 'Angol', 'Német', 'Fizika', 'Kémia', 'Biológia', 'Földrajz', 'Informatika', 'Egyéb'];
 const GRADES = [9, 10, 11, 12];
 const CONDITIONS = { 'Új': 'chip-ok', 'Jó': 'chip-ok', 'Elfogadható': 'chip-plain', 'Kopott': 'chip-warn' }; // állapot: címke színe
@@ -106,26 +105,29 @@ function setupPage() {
 }
 
 /* ===== Megjelenítés ===== */
-let books; // a böngészőben mentett hirdetések (a start() tölti be)
-let favorites; // a kedvencnek jelölt hirdetések azonosítói
-const save = () => localStorage.setItem(KEY, JSON.stringify(books));
-const saveFavorites = () => localStorage.setItem(FAV_KEY, JSON.stringify([...favorites]));
+let books = []; // a Supabase-ből betöltött hirdetések (a start() tölti be)
+let favorites = new Set(); // a bejelentkezett felhasználó kedvencnek jelölt hirdetései (azonosítók)
 
-/** Demó adatok az első indításhoz. */
-function demoBooks() {
-  const book = (title, subject, grade, condition, price, seller, contact, daysAgo, description = '') => ({
-    id: crypto.randomUUID(), title, subject, grade, condition, price, seller, contact, description, createdAt: Date.now() - daysAgo * 864e5,
-  });
-  return [
-    book('Matematika 9. tankönyv', 'Matematika', 9, 'Jó', 1800, 'Kiss Anna, 12.A', 'anna.kiss@pelda.hu', 1),
-    book('Fizika 10. tankönyv', 'Fizika', 10, 'Új', 2500, 'Nagy Bence, 11.B', '+36 30 123 4567', 2, 'Egyszer sem használtam.'),
-    book('Magyar nyelvtan jegyzet', 'Magyar', 11, 'Elfogadható', 800, 'Tóth Réka, 12.B', 'reka.toth@pelda.hu', 3, 'Van benne ceruzás aláhúzás.'),
-    book('Történelem 9.', 'Történelem', 9, 'Jó', 1500, 'Szabó Dávid, 10.A', '+36 20 555 1212', 4),
-    book('Headway Intermediate', 'Angol', 10, 'Jó', 2200, 'Varga Lili, 11.A', 'lili.varga@pelda.hu', 5, 'Munkafüzettel együtt.'),
-    book('Kémia 11. tankönyv', 'Kémia', 11, 'Kopott', 600, 'Horváth Máté, 12.A', '+36 70 987 6543', 6),
-    book('Biológia 9. munkafüzet', 'Biológia', 9, 'Új', 1200, 'Kovács Nóra, 10.B', 'nora.kovacs@pelda.hu', 7, 'Kitöltetlen.'),
-    book('Informatika 12. jegyzet', 'Informatika', 12, 'Jó', 900, 'Molnár Ádám, 12.A', 'adam.molnar@pelda.hu', 8),
-  ];
+/** Az adatbázis created_at oszlopa a kódban createdAt (ezredmásodperc, a rendezéshez). */
+const fromRow = (r) => ({ ...r, createdAt: Date.parse(r.created_at) });
+
+/** Hibás Supabase-válasznál hibaüzenetet ír, és false-t ad. */
+function ok(error, text) {
+  if (error) toast(`${text} (${error.message})`, 'bad');
+  return !error;
+}
+
+/** Törölni csak a saját hirdetést lehet. */
+const mine = (book) => user && book.user_id === user.id;
+
+/** Belépés/kilépés után: a kedvencek a fiókhoz tartoznak, ezért újratöltjük őket (az auth.js hívja). */
+async function onAuthChange() {
+  favorites = new Set();
+  if (user) {
+    const { data, error } = await sb.from('favorites').select('book_id');
+    if (ok(error, 'Nem sikerült betölteni a kedvenceket.')) favorites = new Set(data.map((f) => f.book_id));
+  }
+  render();
 }
 
 /** E-mail → mailto: link, telefonszám → tel: link, más → sima szöveg. */
@@ -150,9 +152,15 @@ function favButton(book) {
     button.setAttribute('aria-pressed', on);
     button.setAttribute('aria-label', `${on ? 'Kivétel a kedvencek közül' : 'Kedvencnek jelölöm'}: ${book.title}`);
   };
-  button.onclick = () => {
-    if (favorites.has(book.id)) favorites.delete(book.id); else favorites.add(book.id);
-    saveFavorites(); paint();
+  button.onclick = async () => {
+    if (!requireLogin()) return;
+    const on = favorites.has(book.id);
+    const { error } = on
+      ? await sb.from('favorites').delete().eq('book_id', book.id)
+      : await sb.from('favorites').insert({ book_id: book.id });
+    if (!ok(error, 'Nem sikerült menteni.')) return;
+    if (on) favorites.delete(book.id); else favorites.add(book.id);
+    paint();
     if ($('#k-fav').checked) render(); // „csak a kedvenceim" nézetben a lista is változik
   };
   paint();
@@ -171,7 +179,7 @@ function card(book) {
     el('p', { class: 'meta' }, 'Eladó: ', el('strong', { text: book.seller })),
     el('p', { class: 'meta' }, 'Kapcsolat: ', contactLink(book.contact)),
     el('div', { class: 'card-actions' }, favButton(book),
-      el('button', { class: 'btn btn-small btn-ghost', type: 'button', text: 'Törlés', onclick: () => remove(book) })));
+      mine(book) && el('button', { class: 'btn btn-small btn-ghost', type: 'button', text: 'Törlés', onclick: () => remove(book) })));
 }
 
 function render() {
@@ -184,9 +192,11 @@ function render() {
 
 async function remove(book) {
   if (!await confirmBox('Törlöd a hirdetést?', `${book.title} (${formatPrice(book.price)}). A művelet nem vonható vissza.`, 'Törlés')) return;
+  const { error } = await sb.from('books').delete().eq('id', book.id); // a kedvenc-jelölések az adatbázisban vele együtt törlődnek
+  if (!ok(error, 'Nem sikerült törölni.')) return;
   books = books.filter((x) => x !== book);
   favorites.delete(book.id);
-  save(); saveFavorites(); render(); toast('A hirdetés törölve.');
+  render(); toast('A hirdetés törölve.');
 }
 
 /* Hirdetésfeladás */
@@ -196,31 +206,34 @@ function showForm(open) {
   $('#book-form').hidden = !open;
   if (!open) return;
   $('#book-form').reset();
+  $('#b-seller').value = userName(); // a regisztrációkor megadott név
   showErrors('b', FIELDS, {});
   $('#b-title').focus();
 }
 
-function onSubmit(e) {
+async function onSubmit(e) {
   e.preventDefault();
+  if (!requireLogin()) return;
   const price = $('#b-price').value.trim();
   const book = {
-    id: crypto.randomUUID(), title: $('#b-title').value.trim(), subject: $('#b-subject').value,
+    title: $('#b-title').value.trim(), subject: $('#b-subject').value,
     grade: Number($('#b-grade').value),             // üres választásnál 0, ami nem érvényes évfolyam
     condition: $('#b-condition').value,
     price: price === '' ? NaN : Number(price),      // az üres mező nem 0 Ft
-    seller: $('#b-seller').value.trim(), contact: $('#b-contact').value.trim(), description: $('#b-desc').value.trim(), createdAt: Date.now(),
+    seller: $('#b-seller').value.trim(), contact: $('#b-contact').value.trim(), description: $('#b-desc').value.trim(),
   };
   if (showErrors('b', FIELDS, validate(book))) return;
-  books.unshift(book);
-  save(); showForm(false); render();
+  const { data, error } = await sb.from('books').insert(book).select().single();
+  if (!ok(error, 'Nem sikerült feladni.')) return;
+  books.unshift(fromRow(data));
+  showForm(false); render();
   toast(`Hirdetés feladva: ${book.title}.`);
 }
 
-function start() {
+async function start() {
   setupPage();
-  books = JSON.parse(localStorage.getItem(KEY) || 'null');
-  favorites = new Set(JSON.parse(localStorage.getItem(FAV_KEY) || '[]'));
-  if (!books) { books = demoBooks(); save(); }
+  const { data, error } = await sb.from('books').select('*');
+  if (ok(error, 'Nem sikerült betölteni a hirdetéseket.')) books = data.map(fromRow);
 
   const grades = GRADES.map((g) => ({ value: g, label: `${g}. évfolyam` }));
   fill($('#k-subject'), SUBJECTS, 'Összes');
@@ -231,11 +244,11 @@ function start() {
 
   $('#book-filters').oninput = render;
   $('#book-filters').onsubmit = (e) => e.preventDefault(); // Enter ne töltse újra az oldalt
-  $('#new-btn').onclick = () => showForm(true);
+  $('#new-btn').onclick = () => requireLogin() && showForm(true);
   $('#b-cancel').onclick = () => showForm(false);
   $('#book-form').onsubmit = onSubmit;
   render();
 }
 
 if (typeof document === 'undefined') module.exports = { validate, filter, isEmail, isPhone, formatPrice }; // a test.js-hez
-else start();
+else addEventListener('DOMContentLoaded', start); // az auth.js a lap végén töltődik be, a start() csak utána fut
