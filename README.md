@@ -22,7 +22,15 @@ Nincs build lépés, az oldal statikus. Helyi szerverrel (a Supabase-hez interne
 npx serve .
 ```
 
-Az adatok a Supabase-ben vannak (táblák, jogosultsági szabályok és demó adatok: `supabase/schema.sql`). Olvasni bárki tud, de új tárgyat, dolgozatot vagy hirdetést, igénylést és kedvencet csak bejelentkezve lehet felvenni (e-mail + jelszó). Törölni csak a saját sort lehet.
+Az adatok a Supabase-ben vannak (táblák, jogosultsági szabályok és demó adatok: `supabase/schema.sql`). Minden adat **iskolához** tartozik: regisztrációkor a felhasználó kiválasztja az iskoláját és az osztályát (e-mail + jelszó), és belépve csak a saját iskolája tárgyait, dolgozatait és hirdetéseit látja. Belépés nélkül csak a belépés felület látszik. Új sort a saját iskolába lehet felvenni, törölni csak a sajátot.
+
+Új iskola felvétele (Supabase SQL Editor):
+
+```sql
+insert into schools (name) values ('Példa Gimnázium');
+```
+
+A sémában egy „Minta Gimnázium" demó adatokkal van. A regisztrációnál az iskolát ellenőrzés nélkül lehet választani, így bárki csatlakozhat bármelyik iskolához (meghívókód később jöhet).
 
 Tesztek (Node.js 18+):
 
@@ -46,7 +54,7 @@ Három funkció, három oldal. Mindegyikhez egy HTML, egy CSS és egy JS fájl t
 app/talalt.html    talalt.css    talalt.js      Talált tárgyak
 app/dolgozat.html  dolgozat.css  dolgozat.js    Dolgozatnaptár
 app/konyv.html     konyv.css     konyv.js       Tankönyvbörze
-app/auth.js                                     közös: Supabase-kliens, belépés és regisztráció
+app/auth.js                                     közös: Supabase-kliens, belépés és regisztráció (iskola + osztály)
 supabase/schema.sql  rls-teszt.sql              adatbázis-séma + jogosultságok + demó adatok, és a jogosultsági teszt
 vercel.json                                     Vercel beállítás (főoldal → app/talalt.html)
 docs.html  docs.css                             a projektdokumentáció böngészőben olvasható változata
