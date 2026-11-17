@@ -118,7 +118,7 @@ function setupPage() {
 }
 
 /* ===== Megjelenítés ===== */
-let exams = []; // a Supabase-ből betöltött számonkérések (a start() tölti be)
+let exams = []; // az iskola számonkérései a Supabase-ből (az onAuthChange tölti be, belépés után)
 const view = { monday: mondayOf(nextSchoolDay(TODAY)), className: '' }; // melyik hetet és osztályt mutatjuk (üres osztály = mind)
 
 /** Az adatbázis class_name oszlopa a kódban className. */
@@ -133,8 +133,16 @@ function ok(error, text) {
 /** Törölni csak a saját számonkérést lehet. */
 const mine = (exam) => user && exam.user_id === user.id;
 
-/** Újrarajzolás belépés/kilépés után (az auth.js hívja). */
-const onAuthChange = () => render();
+/** Belépés/kilépés után: az iskola adatainak (újra)betöltése, és a saját osztály előválasztása (az auth.js hívja). Belépés nélkül nincs adat. */
+async function onAuthChange() {
+  exams = [];
+  if (user) {
+    const { data, error } = await sb.from('exams').select('*');
+    if (ok(error, 'Nem sikerült betölteni a számonkéréseket.')) exams = data.map(fromRow);
+    if (profile) view.className = profile.class_name;
+  }
+  render();
+}
 
 /** Egy számonkérés matricája. A színe a tantárgyé: a CSS-ben .sub-0 … .sub-10. */
 function examCard(exam) {
@@ -159,6 +167,8 @@ function dayColumn({ date, items, over }) {
 }
 
 function render() {
+  const closed = gate();
+  if (closed) { $('#week-warnings').hidden = true; $('#week-board').replaceChildren(closed); return; }
   const days = week(exams, view.monday, view.className);
   $('#w-class').value = view.className;
   $('#week-label').textContent = `${view.monday.slice(0, 4)}. ${shortDate(days[0].date)} – ${shortDate(days[4].date)}`;
@@ -226,10 +236,8 @@ async function onSubmit(e) {
   toast(`Felvéve: ${exam.className} – ${exam.subject} (${exam.type}), ${longDate(exam.date)}.`);
 }
 
-async function start() {
+function start() {
   setupPage();
-  const { data, error } = await sb.from('exams').select('*');
-  if (ok(error, 'Nem sikerült betölteni a számonkéréseket.')) exams = data.map(fromRow);
 
   fill($('#w-class'), CLASSES, 'Összes osztály');
   fill($('#d-class'), CLASSES, 'Válassz…');

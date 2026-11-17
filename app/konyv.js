@@ -105,7 +105,7 @@ function setupPage() {
 }
 
 /* ===== Megjelenítés ===== */
-let books = []; // a Supabase-ből betöltött hirdetések (a start() tölti be)
+let books = []; // az iskola hirdetései a Supabase-ből (az onAuthChange tölti be, belépés után)
 let favorites = new Set(); // a bejelentkezett felhasználó kedvencnek jelölt hirdetései (azonosítók)
 
 /** Az adatbázis created_at oszlopa a kódban createdAt (ezredmásodperc, a rendezéshez). */
@@ -120,12 +120,14 @@ function ok(error, text) {
 /** Törölni csak a saját hirdetést lehet. */
 const mine = (book) => user && book.user_id === user.id;
 
-/** Belépés/kilépés után: a kedvencek a fiókhoz tartoznak, ezért újratöltjük őket (az auth.js hívja). */
+/** Belépés/kilépés után: az iskola hirdetései és a fiók kedvencei (újra)töltődnek (az auth.js hívja). Belépés nélkül nincs adat. */
 async function onAuthChange() {
+  books = [];
   favorites = new Set();
   if (user) {
-    const { data, error } = await sb.from('favorites').select('book_id');
-    if (ok(error, 'Nem sikerült betölteni a kedvenceket.')) favorites = new Set(data.map((f) => f.book_id));
+    const [b, f] = await Promise.all([sb.from('books').select('*'), sb.from('favorites').select('book_id')]);
+    if (ok(b.error, 'Nem sikerült betölteni a hirdetéseket.')) books = b.data.map(fromRow);
+    if (ok(f.error, 'Nem sikerült betölteni a kedvenceket.')) favorites = new Set(f.data.map((x) => x.book_id));
   }
   render();
 }
@@ -183,6 +185,8 @@ function card(book) {
 }
 
 function render() {
+  const closed = gate();
+  if (closed) { $('#book-count').textContent = ''; $('#book-grid').replaceChildren(closed); return; }
   const onlyFavorites = $('#k-fav').checked;
   const list = filter(books, { q: $('#k-q').value, subject: $('#k-subject').value, grade: $('#k-grade').value, sort: $('#k-sort').value, favorites: onlyFavorites ? favorites : null });
   $('#book-count').textContent = `${list.length} / ${books.length} hirdetés`;
@@ -206,7 +210,7 @@ function showForm(open) {
   $('#book-form').hidden = !open;
   if (!open) return;
   $('#book-form').reset();
-  $('#b-seller').value = userName(); // a regisztrációkor megadott név
+  $('#b-seller').value = userLabel(); // a regisztrációkor megadott név és osztály
   showErrors('b', FIELDS, {});
   $('#b-title').focus();
 }
@@ -230,10 +234,8 @@ async function onSubmit(e) {
   toast(`Hirdetés feladva: ${book.title}.`);
 }
 
-async function start() {
+function start() {
   setupPage();
-  const { data, error } = await sb.from('books').select('*');
-  if (ok(error, 'Nem sikerült betölteni a hirdetéseket.')) books = data.map(fromRow);
 
   const grades = GRADES.map((g) => ({ value: g, label: `${g}. évfolyam` }));
   fill($('#k-subject'), SUBJECTS, 'Összes');

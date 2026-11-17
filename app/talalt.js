@@ -127,7 +127,7 @@ function setupPage() {
 }
 
 /* ===== Megjelenítés ===== */
-let items = []; // a Supabase-ből betöltött tárgyak (a start() tölti be)
+let items = []; // az iskola tárgyai a Supabase-ből (az onAuthChange tölti be, belépés után)
 
 /** Hibás Supabase-válasznál hibaüzenetet ír, és false-t ad. */
 function ok(error, text) {
@@ -139,8 +139,15 @@ function ok(error, text) {
 const mine = (item) => user && item.user_id === user.id;
 const myClaim = (item) => user && item.claimed_by_user === user.id;
 
-/** Újrarajzolás belépés/kilépés után (az auth.js hívja). */
-const onAuthChange = () => render();
+/** Belépés/kilépés után: az iskola adatainak (újra)betöltése (az auth.js hívja). Belépés nélkül nincs adat. */
+async function onAuthChange() {
+  items = [];
+  if (user) {
+    const { data, error } = await sb.from('found_items').select('*');
+    if (ok(error, 'Nem sikerült betölteni a tárgyakat.')) items = data;
+  }
+  render();
+}
 
 /** Polaroid: fotó, vagy a kategória rajza csíkos háttéren. Az „Igényelve" bélyeg ráütve. */
 function polaroid(item) {
@@ -173,6 +180,8 @@ function card(item) {
 }
 
 function render() {
+  const closed = gate();
+  if (closed) { $('#found-count').textContent = ''; $('#found-grid').replaceChildren(closed); return; }
   const list = filter(items, { q: $('#f-q').value, category: $('#f-cat').value, from: $('#f-from').value, to: $('#f-to').value, hideClaimed: $('#f-hide').checked });
   $('#found-count').textContent = `${list.length} / ${items.length} tárgy`;
   $('#found-grid').replaceChildren(...(list.length ? list.map(card) : [el('p', { class: 'empty', text: 'Nincs a szűrésnek megfelelő tárgy.' })]));
@@ -202,7 +211,7 @@ function openClaim(item) {
   if (!requireLogin()) return;
   claimed = item;
   $('#claim-text').textContent = `${item.name} – ${item.place}. Add meg, ki vagy, hogy a portán átvehesd.`;
-  $('#c-name').value = userName();
+  $('#c-name').value = userLabel();
   showErrors('c', ['name'], {});
   $('#claim-dialog').showModal();
 }
@@ -268,10 +277,8 @@ async function onSubmit(e) {
   toast(`„${data.name}" felvéve.`);
 }
 
-async function start() {
+function start() {
   setupPage();
-  const { data, error } = await sb.from('found_items').select('*');
-  if (ok(error, 'Nem sikerült betölteni a tárgyakat.')) items = data;
 
   fill($('#f-cat'), Object.keys(CATEGORIES), 'Összes');
   fill($('#t-category'), Object.keys(CATEGORIES), 'Válassz…');
