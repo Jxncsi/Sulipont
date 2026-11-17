@@ -4,10 +4,11 @@
 const sb = supabase.createClient('https://ooxfoivynfhtcxhwsewz.supabase.co', 'sb_publishable_-IKs81lcTLiy3VAAA0gHZQ_5A-ItthP');
 let user; // a bejelentkezett felhasználó; undefined: még nem tudjuk, null: nincs belépve
 let profile = null; // { school_id, name, class_name }: melyik iskolába jár
+let school = null; // az iskolája: { id, name, classes }
+let schools = []; // az összes iskola (a regisztrációs űrlaphoz)
 const userName = () => profile?.name || '';
 const userLabel = () => (profile ? `${profile.name}, ${profile.class_name}` : ''); // pl. „Kiss Anna, 9.A"
 
-const AUTH_CLASSES = ['9.A', '9.B', '10.A', '10.B', '11.A', '11.B', '12.A', '12.B']; // ugyanaz, mint a dolgozat.js CLASSES
 const AUTH_ERRORS = {
   'Invalid login credentials': 'Hibás e-mail-cím vagy jelszó.',
   'User already registered': 'Ezzel az e-mail-címmel már van fiók.',
@@ -37,8 +38,15 @@ function buildAuth() {
   $('#site-nav').append(el('button', { class: 'btn btn-small', id: 'auth-btn', type: 'button', onclick: () => (user ? sb.auth.signOut() : openAuth()) }));
 
   fill($('#a-school'), [], 'Válassz…');
-  fill($('#a-class'), AUTH_CLASSES, 'Válassz…');
-  sb.from('schools').select('id, name').order('name').then(({ data }) => fill($('#a-school'), (data || []).map((s) => ({ value: s.id, label: s.name })), 'Válassz…'));
+  fill($('#a-class'), [], 'Előbb az iskolát válaszd');
+  sb.from('schools').select('*').order('name').then(({ data }) => {
+    schools = data || [];
+    fill($('#a-school'), schools.map((s) => ({ value: s.id, label: s.name })), 'Válassz…');
+  });
+  $('#a-school').onchange = () => { // az osztályok az iskola saját listájából jönnek
+    const classes = schools.find((s) => s.id === $('#a-school').value)?.classes || [];
+    fill($('#a-class'), classes, classes.length ? 'Válassz…' : 'Előbb az iskolát válaszd');
+  };
 
   $('#auth-cancel').onclick = () => dialog.close();
   $('#auth-switch').onclick = () => setAuthMode(!signingUp);
@@ -107,8 +115,11 @@ sb.auth.onAuthStateChange((_event, session) => {
     const id = user?.id ?? null;
     if (id === lastId) return;
     lastId = id;
-    profile = null;
-    if (user) profile = (await sb.from('profiles').select('*').maybeSingle()).data;
+    profile = school = null;
+    if (user) {
+      profile = (await sb.from('profiles').select('*').maybeSingle()).data;
+      if (profile) school = (await sb.from('schools').select('*').eq('id', profile.school_id).maybeSingle()).data;
+    }
     paintAuth();
     if (typeof onAuthChange === 'function') await onAuthChange(); // az oldal újratölti és újrarajzolja magát
   });

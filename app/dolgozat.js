@@ -3,7 +3,7 @@
 
 /* ===== Adatok ===== */
 const SUBJECTS = ['Matematika', 'Magyar', 'Történelem', 'Angol', 'Német', 'Fizika', 'Kémia', 'Biológia', 'Földrajz', 'Informatika', 'Egyéb'];
-const CLASSES = ['9.A', '9.B', '10.A', '10.B', '11.A', '11.B', '12.A', '12.B'];
+let CLASSES = ['9.A', '9.B', '10.A', '10.B', '11.A', '11.B', '12.A', '12.B']; // alapérték; belépés után az iskola osztályai (schools.classes) váltják
 const TYPES = ['Dolgozat', 'Témazáró', 'Beadandó', 'Felelet'];
 const MAX = 3; // ennél több számonkérés egy osztálynak egy napra: figyelmeztetés
 
@@ -139,9 +139,17 @@ async function onAuthChange() {
   if (user) {
     const { data, error } = await sb.from('exams').select('*');
     if (ok(error, 'Nem sikerült betölteni a számonkéréseket.')) exams = data.map(fromRow);
+    if (school) CLASSES = school.classes;
     if (profile) view.className = profile.class_name;
   }
+  fillClasses();
   render();
+}
+
+/** Az osztályválasztók feltöltése az iskola osztályaival. */
+function fillClasses() {
+  fill($('#w-class'), CLASSES, 'Összes osztály');
+  fill($('#d-class'), CLASSES, 'Válassz…');
 }
 
 /** Egy számonkérés matricája. A színe a tantárgyé: a CSS-ben .sub-0 … .sub-10. */
@@ -239,8 +247,7 @@ async function onSubmit(e) {
 function start() {
   setupPage();
 
-  fill($('#w-class'), CLASSES, 'Összes osztály');
-  fill($('#d-class'), CLASSES, 'Válassz…');
+  fillClasses();
   fill($('#d-subject'), SUBJECTS, 'Válassz…');
   fill($('#d-type'), TYPES, 'Válassz…');
   $('#d-date').min = TODAY; // múltbeli dátumot nem lehet választani
